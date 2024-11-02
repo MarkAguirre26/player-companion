@@ -1,0 +1,24 @@
+Pos 1  = 2
+Base   = 1
+Step 1 = 2
+Step 2 = 1
+Step 3 = 2
+Step 4 = 3
+Step 5 = 3
+
+Rules
+
+Base Win
+go to pos 1
+loss go to step 1
+
+pos 1 win
+basck to base
+loss go to step 1
+
+every win
+go back 1 level
+
+
+2 wins streak back to base
+win lose win back to base

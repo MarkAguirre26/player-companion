@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bottom Notification</title>
+  <style>
+    /* Style for the notification box */
+    .notification {
+      position: fixed;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: rgba(63, 55, 55, 0.726); /* Slightly transparent */
+      color: #fff;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 16px;
+      display: none; /* Initially hidden */
+      z-index: 1000; /* Ensure it appears on top */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Notification box -->
+  <div class="notification" id="notification">
+<span id="message">Bitoy just won 1</span>
+  </div>
+
+  <script>
+    // Function to show and automatically hide the notification
+    function showNotification(message) {
+      const notification = document.getElementById('notification');
+      notification.style.display = 'block';
+      $('#message').text(message)
+      // Hide the notification after 1 second
+      setTimeout(() => {
+        notification.style.display = 'none';
+      }, 2000);
+    }
+
+    // Show the notification after 2 seconds (for demo purposes)
+    setTimeout(showNotification("test message"), 1000);
+  </script>
+
+</body>
+</html>
