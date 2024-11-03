@@ -485,7 +485,7 @@
                 </div>
 
 
-                <div id="challengeContainer" class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm hidden ">
+                <div id="challengeContainer" class="grid grid-cols-2 md:grid-cols-2 gap-2 text-sm hidden ">
 
                     <!-- Sensitivity -->
                     <label id="SensitivityValue" for="Sensitivity" class="text-sm text-left">Prediction
@@ -508,14 +508,20 @@
 
                     <!-- Trailing Stop Spread -->
                     <label for="trailingStopSpread" class="text-sm text-left">Trailing Stop</label>
-                    <div class="grid grid-cols-1 gap-2 mt-2 ml-6" style="margin-left: 0px;">
-                        <div class="flex" style="margin-top: -10px;">
-                            <input type="number" id="trailingStopActivation"
-                                class="p-1 border rounded text-sm w-32 mr-6" placeholder="Trigger">
-                            <input type="number" id="trailingStopSpread" class="p-1 border rounded text-sm w-32"
+                    <div class="grid grid-cols-2 gap-2 mt-2" style="margin-left: 0px; margin-top: -5px;">
+                        <div class="flex flex-col">
+                            <label for="trailingStopActivation" class="text-xs">Trigger:</label>
+                            <input type="number" id="trailingStopActivation" class="p-1 border rounded text-sm w-full"
+                                placeholder="Trigger">
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="trailingStopSpread" class="text-xs">Spread:</label>
+                            <input type="number" id="trailingStopSpread" class="p-1 border rounded text-sm w-full"
                                 placeholder="Spread">
                         </div>
                     </div>
+
+
 
 
 
@@ -529,26 +535,22 @@
 
 
                     <!-- Shield Section aligned under Money Management -->
-                    <label for="trailingStopSpread" class="text-sm text-left">Shield</label>
-                    <div class="col-start-2 col-span-1 mt-2">
-                        <!-- Shield Checkbox -->
-                        <div class="flex items-center hidden">
-                            <input type="checkbox" id="isShield" class="mr-2">
-                            <label for="isShield" class="text-sm">Shield</label>
+                    <label class="text-sm text-left">Shield</label>
+                    <div class="grid grid-cols-2 gap-2 mt-2" style="margin-left: 0px; margin-top: -5px;">
+                        <div class="flex flex-col">
+                            <label for="stopTrigger" class="text-xs">Trigger:</label>
+                            <input type="number" id="stopTrigger" class="p-1 border rounded text-sm w-full"
+                                placeholder="Trigger">
                         </div>
-                        <!-- Stop Trigger and Virtual Win Grouped Below Shield -->
-
-                        <div class="grid grid-cols-1 gap-2 mt-2 ml-6" style="margin-left: 0px; margin-top: -10px;">
-                            <div class="flex">
-                                <input type="number" id="stopTrigger" class="p-1 border rounded text-sm w-32 mr-6"
-                                    placeholder="Enter stop trigger">
-                                <input type="number" id="virtualWin" class="p-1 border rounded text-sm w-32"
-                                    placeholder="Enter virtual win">
-                            </div>
+                        <div class="flex flex-col">
+                            <label for="virtualWin" class="text-xs">Win:</label>
+                            <input type="number" id="virtualWin" class="p-1 border rounded text-sm w-full"
+                                placeholder="Win">
                         </div>
-
-
                     </div>
+
+
+
 
 
                     <div class="col-start-2 col-span-1 mt-2 hidden">
@@ -565,17 +567,19 @@
                         placeholder="Starting fund">
 
 
-                    <label for="trailingStopSpread" class="text-sm text-left">Daily Goal %</label>
-                    <div class="grid grid-cols-1 gap-2 mt-2 ml-6" style="margin-left: 0px;">
-                        <div class="flex" style="margin-top: -10px;">
-                            <input type="number" id="dailyGoalPercentage" class="p-1 border rounded text-sm w-32 mr-6"
-                                placeholder="Daily goal %">
-                            <input type="number" id="dailyGoalValue" class="p-1 border rounded text-sm w-32 bg-gray-200"
-                                readonly placeholder="Daily goal Value">
+                    <label class="text-sm text-left">Daily Goal</label>
+                    <div class="grid grid-cols-2 gap-2 mt-2" style="margin-left: 0px; margin-top: -5px;">
+                        <div class="flex flex-col">
+                            <label for="dailyGoalPercentage" class="text-xs">%</label>
+                            <input type="number" id="dailyGoalPercentage" class="p-1 border rounded text-sm w-full"
+                                placeholder="Percentage">
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="dailyGoalValue" class="text-xs">Amount</label>
+                            <input type="number" id="dailyGoalValue" class="p-1 border rounded text-sm w-full bg-gray-200"
+                                placeholder="Amount" readonly>
                         </div>
                     </div>
-
-
 
 
 
