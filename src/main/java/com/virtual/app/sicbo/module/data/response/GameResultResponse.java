@@ -10,7 +10,7 @@ public class GameResultResponse {
 
     private String message;
     private String sequence;
-    private String diceSum;
+    private String diceNumber;
     private GameResultStatus gameStatus;
     private int baseBetUnit;
     private int suggestedBetUnit;

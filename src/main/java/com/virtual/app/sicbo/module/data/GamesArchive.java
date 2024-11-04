@@ -67,7 +67,7 @@ public class GamesArchive {
     private String riskLevel;
 
     public GamesArchive(Integer journalId, Integer baseBetUnit, Integer suggestedBetUnit, Integer lossCounter,
-                        String recommendedBet, String sequence, String handResult,String skipState, String message, Integer handCount,
+                        String recommendedBet, String sequence, String diceNumber, String handResult,String skipState, String message, Integer handCount,
                         Integer wins, Integer losses, Integer profit, Integer playingUnits, String riskLevel) {
         this.journalId = journalId;
         this.baseBetUnit = baseBetUnit;
@@ -75,6 +75,7 @@ public class GamesArchive {
         this.lossCounter = lossCounter;
         this.recommendedBet = recommendedBet;
         this.sequence = sequence;
+        this.diceNumber = diceNumber;
         this.handResult = handResult;
         this.skipState = skipState;
         this.message = message;

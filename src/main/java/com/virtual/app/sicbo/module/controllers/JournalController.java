@@ -79,6 +79,7 @@ public class JournalController {
 
                     gamesArchive.getLossCounter()
             );
+            response.setDiceNumber(gamesArchive.getDiceNumber());
             response.setSkipState(gamesArchive.getSkipState());
             response.setRiskLevel(gamesArchive.getRiskLevel());
             response.setHandResult(gamesArchive.getHandResult());

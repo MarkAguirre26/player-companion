@@ -377,7 +377,7 @@
 
 
 
-                <div class="flex justify-between mb-2 hidden">
+                <div class="flex justify-between mb-2">
                     <button type="button" id="smallButton"
                         class="flex-1 bg-gradient-to-l from-blue-700 to-blue-800 text-white py-3 rounded hover:from-blue-600 hover:to-blue-700 transition duration-300 shadow-lg mr-2">
                         SMALL
@@ -388,6 +388,11 @@
                         class="flex-1 bg-gradient-to-r from-red-700 to-red-800 text-white py-3 rounded hover:from-red-600 hover:to-red-700 transition duration-300 shadow-lg ml-2">
                         BIG
                     </button>
+
+                    <button type="button" id="trippleButton"
+                    class="flex-1 bg-gradient-to-r from-green-700 to-green-800 text-white py-3 rounded hover:from-green-600 hover:to-green-700 transition duration-300 shadow-lg ml-2">
+                    TRIPPLE
+                </button>
 
 
                 </div>
@@ -738,7 +743,7 @@
 
                             // console.log(message);
 
-                            if (messgae.includes('SicBo')) {
+                            if (messgae.includes('SicBo:')) {
 
 
                                 const pauseButton = document.getElementById('pauseButton');
@@ -884,8 +889,12 @@
                     showSpinner();
                     playGame("b:11");
                 });
-
-
+                
+                $('#trippleButton').on('click', function () {
+                    showSpinner();
+                    playGame("t:15");
+                });
+                
 
 
                 // Toggle menu visibility when clicking the button
@@ -1216,7 +1225,7 @@
 
                 try {
 
-                    displayResults(response.sequence.toUpperCase(), response.diceSum);
+                    displayResults(response.sequence.toUpperCase(), response.diceNumber);
 
 
                 } catch (e) {
@@ -1297,7 +1306,7 @@
                 const results = playerAndBankerCollections.replace("1111", "").split('');
                 const diceSums = diceSumCollection.replace("1111", "").split(',');
 
-                // console.log(diceSumCollection);
+                // console.log("diceSums"+diceSums);
 
                 // Clear previous results
                 document.getElementById('handResultColumn').innerHTML = '';

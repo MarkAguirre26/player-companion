@@ -118,8 +118,6 @@ public class SicBoController {
         }
 
 
-
-
         GameResultResponse gameResultResponse = updateSequenceAndUpdateHandCount(existingGame, diceSizeValue, userInputSmallOrBig);
 
 
@@ -151,7 +149,7 @@ public class SicBoController {
         gameResponse.setLossCounter(game.getLossCounter());
         gameResponse.setRecommendedBet(game.getRecommendedBet());
         gameResponse.setSequence(game.getSequence());
-        gameResponse.setDiceNumber(game.getDiceSum());
+        gameResponse.setDiceNumber(game.getDiceNumber());
         gameResponse.setMessage("Initialized");
         gameResponse.setRiskLevel(game.getRiskLevel());
         gameResponse.setDateLastUpdated(LocalDateTime.now());
@@ -189,7 +187,7 @@ public class SicBoController {
 
             gamesArchiveService.addGameArchive(new GamesArchive(savedJournal.getJournalId(), response.getBaseBetUnit(),
                     response.getSuggestedBetUnit(), response.getLossCounter(), response.getRecommendedBet(),
-                    response.getSequence(), response.getHandResult(), response.getSkipState(), "Archived", gameResultStatus.getHandCount(),
+                    response.getSequence(),response.getDiceNumber(), response.getHandResult(), response.getSkipState(), "Archived", gameResultStatus.getHandCount(),
                     gameResultStatus.getWins(), gameResultStatus.getLosses(), gameResultStatus.getProfit(),
                     gameResultStatus.getPlayingUnits(), response.getRiskLevel()));
         }
@@ -225,7 +223,7 @@ public class SicBoController {
         GameResultStatus gameStatus = existingGame.getGameStatus();
         // Update the sequence and hand count
         String sequence = existingGame.getSequence() == null ? "1111" : existingGame.getSequence() + diceSizeValue;
-        String diceSums = existingGame.getDiceSum() == null ? "1111" : existingGame.getDiceSum() + "," + diceSum;
+        String diceSums = existingGame.getDiceNumber() == null ? "1111" : existingGame.getDiceNumber() + "," + diceSum;
         int handCount = gameStatus == null ? 1 : gameStatus.getHandCount() + 1;
 
         assert gameStatus != null;
@@ -233,7 +231,7 @@ public class SicBoController {
         gameStatus.setHandCount(handCount);
         existingGame.setGameStatus(gameStatus);
         existingGame.setSequence(sequence);
-        existingGame.setDiceSum(diceSums);
+        existingGame.setDiceNumber(diceSums);
 
         return existingGame;
     }
@@ -274,7 +272,7 @@ public class SicBoController {
             gameResultResponse.setMessage(PREDICTION_CONFIDENCE_LOW);
 
             gameResultResponse.setSequence(gameResultResponse.getSequence());
-            gameResultResponse.setDiceSum(gameResultResponse.getDiceSum());
+            gameResultResponse.setDiceNumber(gameResultResponse.getDiceNumber());
 
 
         }
@@ -311,7 +309,7 @@ public class SicBoController {
 
 
         gameResultResponse.setSequence(gameResultResponse.getSequence());
-        gameResultResponse.setDiceSum(gameResultResponse.getDiceSum());
+        gameResultResponse.setDiceNumber(gameResultResponse.getDiceNumber());
 
 //        gameResultResponse.setRecommendedBet(WAIT);
 
@@ -339,7 +337,6 @@ public class SicBoController {
                     betSize = BaccaratBetting.kissModifiedBetting(gameResultResponse);
                 }
             }
-
 
 
 //
@@ -431,8 +428,8 @@ public class SicBoController {
                 gameResultResponse.setMessage(PREDICTION_CONFIDENCE_LOW);
             }
 
-            System.out.println("CONFIDENCE_THRESHOLD:"+CONFIDENCE_THRESHOLD);
-            System.out.println("confidence:"+gameResultResponse.getConfidence());
+            System.out.println("CONFIDENCE_THRESHOLD:" + CONFIDENCE_THRESHOLD);
+            System.out.println("confidence:" + gameResultResponse.getConfidence());
 
             String isSKippedValue = isFrozen() ? "Y" : "N";
             String currentSkipState = gameResultResponse.getSkipState() == null ? "" : gameResultResponse.getSkipState();
@@ -442,6 +439,14 @@ public class SicBoController {
                 gameResultResponse.setSuggestedBetUnit(betSize);
             } else {
                 gameResultResponse.setSuggestedBetUnit(0);
+
+                String skipStateSequence = gameResultResponse.getSkipState();
+//                char lastCharFromSkipStateSequence = skipStateSequence.charAt(skipStateSequence.length() - 1);
+
+                String modifiedStr = skipStateSequence.substring(0, skipStateSequence.length() - 1);
+
+
+                gameResultResponse.setSkipState(modifiedStr+"Y");
             }
 
 
@@ -502,7 +507,7 @@ public class SicBoController {
             gameResultResponse.setTrailingStop(trailingStop);
         }
         gameResultResponse.setSequence(gameResultResponse.getSequence().replace("1111", ""));
-        gameResultResponse.setDiceSum(gameResultResponse.getDiceSum().replace("1111", ""));
+        gameResultResponse.setDiceNumber(gameResultResponse.getDiceNumber().replace("1111", ""));
 
         return gameResultResponse;
     }
@@ -551,7 +556,9 @@ public class SicBoController {
     }
 
 
-    private GameResultResponse updateProfitAndFund(String predictedBet, String diceSizeValue, GameResultResponse gameResultResponse, int suggestedUnit) {
+    private GameResultResponse updateProfitAndFund(String predictedBet, String diceSizeValue,
+                                                   GameResultResponse gameResultResponse,
+                                                   int suggestedUnit) {
 
         GameParameters gameParameters = getGameParameters();
 
@@ -810,7 +817,7 @@ public class SicBoController {
     private GameResultResponse createInitialGameResultResponse(GameStatus gameStatus) {
         GameResultResponse gameResultResponse = new GameResultResponse();
         gameResultResponse.setSequence("1111");
-        gameResultResponse.setDiceSum("1111");
+        gameResultResponse.setDiceNumber("1111");
         gameResultResponse.setMessage("Game reset!");
         gameResultResponse.setBaseBetUnit(1);
         gameResultResponse.setInitialPlayingUnits(100);
@@ -866,7 +873,7 @@ public class SicBoController {
         response.setLossCounter(latesGameResponse.getLossCounter());
         response.setRecommendedBet(latesGameResponse.getRecommendedBet());
         response.setSequence(latesGameResponse.getSequence());
-        response.setDiceSum(latesGameResponse.getDiceNumber());
+        response.setDiceNumber(latesGameResponse.getDiceNumber());
         response.setHandResult(latesGameResponse.getHandResult());
         response.setMessage(latesGameResponse.getMessage());
         response.setRiskLevel(latesGameResponse.getRiskLevel());
@@ -915,7 +922,7 @@ public class SicBoController {
         gameResponse.setInitialPlayingUnits(gameResultResponse.getInitialPlayingUnits());
         gameResponse.setRecommendedBet(gameResultResponse.getRecommendedBet());
         gameResponse.setSequence(gameResultResponse.getSequence());
-        gameResponse.setDiceNumber(gameResultResponse.getDiceSum());
+        gameResponse.setDiceNumber(gameResultResponse.getDiceNumber());
         gameResponse.setHandResult(gameResultResponse.getHandResult() == null ? "" : gameResultResponse.getHandResult());
         gameResponse.setMessage(gameResultResponse.getMessage());
         gameResponse.setRiskLevel(gameResultResponse.getRiskLevel());
