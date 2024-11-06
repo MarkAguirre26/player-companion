@@ -23,6 +23,11 @@ public class MarkovChain {
         String sequence = "";
         if(sequenceInput.length() > 40){
             sequence = sequenceInput.substring((sequenceInput.length() / 40) * 40);
+
+            if(sequence.isEmpty()){
+                sequence = sequenceInput.substring(sequenceInput.length() - 40);
+            }
+
         }else{
             sequence  = sequenceInput;
         }
@@ -34,7 +39,7 @@ public class MarkovChain {
 
 
         if (sequence.isEmpty()) {
-            throw new IllegalArgumentException("Sequence cannot be null for training.");
+            throw   new IllegalArgumentException("Sequence cannot be null for training.");
         }
         for (int i = 0; i < sequence.length() - 1; i++) {
             char current = sequence.charAt(i);
