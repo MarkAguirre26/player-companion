@@ -19,7 +19,15 @@ public class MarkovChain {
      */
     public Optional<Pair<Character, Double>> predictNext(String sequenceInput) {
 
-        String sequence = sequenceInput.substring((sequenceInput.length() / 40) * 40);
+
+        String sequence = "";
+        if(sequenceInput.length() > 40){
+            sequence = sequenceInput.substring((sequenceInput.length() / 40) * 40);
+        }else{
+            sequence  = sequenceInput;
+        }
+
+
 
         Map<Character, Map<Character, Integer>> transitions = new HashMap<>();
         Map<Character, Integer> totalCounts = new HashMap<>();
