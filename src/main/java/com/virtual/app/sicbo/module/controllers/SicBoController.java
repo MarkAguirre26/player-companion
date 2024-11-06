@@ -187,7 +187,7 @@ public class SicBoController {
 
             gamesArchiveService.addGameArchive(new GamesArchive(savedJournal.getJournalId(), response.getBaseBetUnit(),
                     response.getSuggestedBetUnit(), response.getLossCounter(), response.getRecommendedBet(),
-                    response.getSequence(),response.getDiceNumber(), response.getHandResult(), response.getSkipState(), "Archived", gameResultStatus.getHandCount(),
+                    response.getSequence(), response.getDiceNumber(), response.getHandResult(), response.getSkipState(), "Archived", gameResultStatus.getHandCount(),
                     gameResultStatus.getWins(), gameResultStatus.getLosses(), gameResultStatus.getProfit(),
                     gameResultStatus.getPlayingUnits(), response.getRiskLevel()));
         }
@@ -365,7 +365,7 @@ public class SicBoController {
             gameResultResponse.setTrailingStop(gameResultResponseWithTrailingStop.getTrailingStop());
 
 
-            double confidence = gameResultResponse.getConfidence() == null ? 0 : gameResultResponse.getConfidence();
+            double confidence = gameResultResponse.getConfidence() == null ? 0.55 : gameResultResponse.getConfidence();
             gameResultResponse.setConfidence(confidence);
 
 
@@ -425,8 +425,15 @@ public class SicBoController {
 
             int sensitivity = gameParameters.getSensitivity() == null ? 55 : gameParameters.getSensitivity();
             double CONFIDENCE_THRESHOLD = (double) sensitivity / 100;
-            if (gameResultResponse.getConfidence() < CONFIDENCE_THRESHOLD) {
+            if (confidence < CONFIDENCE_THRESHOLD) {
                 gameResultResponse.setMessage(PREDICTION_CONFIDENCE_LOW);
+            }
+
+            if (stopTrigger == 0 && virtualWin == 0) {
+                if (gameResultResponse.getMessage().equals(PREDICTION_CONFIDENCE_LOW) &&
+                        gameResultResponse.getConfidence() >= CONFIDENCE_THRESHOLD) {
+                    gameResultResponse.setMessage(PLACE_YOUR_BET);
+                }
             }
 
             System.out.println("CONFIDENCE_THRESHOLD:" + CONFIDENCE_THRESHOLD);
@@ -447,7 +454,7 @@ public class SicBoController {
                 String modifiedStr = skipStateSequence.substring(0, skipStateSequence.length() - 1);
 
 
-                gameResultResponse.setSkipState(modifiedStr+"Y");
+                gameResultResponse.setSkipState(modifiedStr + "Y");
             }
 
 

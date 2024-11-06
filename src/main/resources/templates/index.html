@@ -668,7 +668,7 @@
             var totalProfit = 0;
             var stompClient = null;
 
-
+            var sensitivityGlobal = 50;
 
 
 
@@ -1040,7 +1040,7 @@
                     const SensitivityValue = document.getElementById('SensitivityValue');
                     SensitivityValue.textContent = "Prediction Sensitivity(" + data.sensitivity + ")";
 
-
+                    sensitivityGlobal  = data.sensitivity;
 
 
                 } catch (error) {
@@ -1687,7 +1687,7 @@
                 // Change class based on percentage to adjust color
                 if (percentage < 30) {
                     progressBar.className = 'progress-bar low';
-                } else if (percentage < 59) {
+                } else if (percentage < sensitivityGlobal) {
                     progressBar.className = 'progress-bar medium';
                 } else {
                     progressBar.className = 'progress-bar high';
