@@ -3,8 +3,10 @@ package com.virtual.app.sicbo.module.services.impl;
 import com.virtual.app.sicbo.module.model.Pair;
 import org.springframework.stereotype.Service;
 
-
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class MarkovChain {
@@ -12,15 +14,18 @@ public class MarkovChain {
 
     /**
      * Predicts the next character based on the current character.
+     *
      * @return an Optional containing a Pair of the predicted character and its probability, or empty if no prediction is possible
      */
-    public Optional<Pair<Character, Double>> predictNext(String sequence) {
+    public Optional<Pair<Character, Double>> predictNext(String sequenceInput) {
+
+        String sequence = sequenceInput.substring((sequenceInput.length() / 40) * 40);
 
         Map<Character, Map<Character, Integer>> transitions = new HashMap<>();
         Map<Character, Integer> totalCounts = new HashMap<>();
 
 
-        if (sequence == null) {
+        if (sequence.isEmpty()) {
             throw new IllegalArgumentException("Sequence cannot be null for training.");
         }
         for (int i = 0; i < sequence.length() - 1; i++) {
