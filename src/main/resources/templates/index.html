@@ -499,9 +499,6 @@
                         value="50">
 
 
-
-
-
                     <!-- Stop Loss -->
                     <label for="stopLoss" class="text-sm text-left">Stop Loss</label>
                     <input type="number" id="stopLoss" class="p-1 border rounded text-sm" placeholder="Enter stop loss">
@@ -527,14 +524,11 @@
                     </div>
 
 
-
-
-
                     <!-- Money Management -->
                     <label for="moneyManagement" class="text-sm text-left">Money Management</label>
                     <select id="moneyManagement" class="p-1 border rounded text-sm">
                         <option value="FLAT">FLAT</option>
-                        <option value="STOCHASTIC">STOCHASTIC</option>
+                        <option value="RLIZA">RLIZA</option>
                         <option value="KISS_MODIFIED">KISS MODIFIED</option>
                     </select>
 
@@ -1258,18 +1252,23 @@
                 var betUnitValue = getNumbersFromString($("#nextbetText").text());
 
                 if (betUnitValue > 0) {
+
+                    betAmountValue = $('#betAmount').val();
+
                     playNotificationSound();
+
+
                 }
 
 
-                // Get the content of the element with ID 'handCount'
-                const handCountText = $('#handCount').text();
+                // // Get the content of the element with ID 'handCount'
+                // const handCountText = $('#handCount').text();
+                // const msgHeader  = $('#infoHeader').text();
 
-
-                if (getNumbersFromString(handCountText) >= 70) {
-                    processEventToReset('yes');
-                    setPauseAndPlay('pause');
-                }
+                // if (getNumbersFromString(handCountText) >= 70 && !msgHeader.includes("Archive")) {
+                //     processEventToReset('yes');
+                //     setPauseAndPlay('pause');
+                // }
 
 
 

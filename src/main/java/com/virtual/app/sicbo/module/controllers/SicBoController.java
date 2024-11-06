@@ -330,9 +330,10 @@ public class SicBoController {
 
                 if (currentStrategy.equals(Strategies.FLAT.getValue())) {
                     betSize = 1;
-                } else if (currentStrategy.equals(Strategies.STOCHASTIC.getValue())) {
+                } else if (currentStrategy.equals(Strategies.RLIZA.getValue())) {
 
-                    betSize = BaccaratBetting.stochasticBetting(gameResultResponse);
+                    betSize = BaccaratBetting.rLiza(gameResultResponse);
+
                 } else if (currentStrategy.equals(Strategies.KISS_MODIFIED.getValue())) {
                     betSize = BaccaratBetting.kissModifiedBetting(gameResultResponse);
                 }
@@ -839,6 +840,7 @@ public class SicBoController {
 
 
     private Pair<Character, Double> combinePredictions(Optional<Pair<Character, Double>> markovResult) {
+
         // Handle both results being absent
         if (markovResult.isEmpty()) {
             return new Pair<>(null, 0.0);

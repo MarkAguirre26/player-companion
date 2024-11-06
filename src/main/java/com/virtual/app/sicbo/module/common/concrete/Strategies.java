@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public enum Strategies {
 
-   
-    WINLOCK("WINLOCK"),
+
+    RLIZA("RLIZA"),
     TREND_OF_TWO("TREND_OF_TWO"),
     TREND_OF_THREE("TREND_OF_THREE"),
     FREEHAND("FREEHAND"),
