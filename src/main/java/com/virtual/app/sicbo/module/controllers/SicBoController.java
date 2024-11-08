@@ -356,6 +356,7 @@ public class SicBoController {
                 }else{
                     if(gameResultResponse.getSequence().replace("1111","").length() > 1){
                         saveFreezeState(OFF);
+
                     }else{
                         saveFreezeState(ON);
                     }
@@ -440,19 +441,6 @@ public class SicBoController {
 
 
             } else {
-                // TEMPORARY
-//                if (gameResultResponse.getSequence().length() > 1 && gameResultResponse.getSuggestedBetUnit() != 0) {
-//                    saveFreezeState(OFF);
-//                } else {
-//                    if(gameResultResponse.getSequence().length() <=1){
-//                    saveFreezeState(ON);
-//                        System.out.println("here a");
-//                    }else{
-//                        saveFreezeState(OFF);
-//                        System.out.println("here b");
-//                    }
-//
-//                }
 
                 if(gameResultResponse.getSequence().replace("1111","").length() > 1){
                     saveFreezeState(OFF);
@@ -467,6 +455,7 @@ public class SicBoController {
             double CONFIDENCE_THRESHOLD = (double) sensitivity / 100;
             if (confidence < CONFIDENCE_THRESHOLD) {
                 gameResultResponse.setMessage(PREDICTION_CONFIDENCE_LOW);
+
             }
 
             if (stopTrigger == 0 && virtualWin == 0) {
@@ -488,10 +477,10 @@ public class SicBoController {
                 gameResultResponse.setSuggestedBetUnit(betSize);
             } else {
                 gameResultResponse.setSuggestedBetUnit(0);
-//
-//                String skipStateSequence = gameResultResponse.getSkipState();
-//                String modifiedStr = skipStateSequence.substring(0, skipStateSequence.length() - 1);
-//                gameResultResponse.setSkipState(modifiedStr + "Y");
+                saveFreezeState(ON);//
+                String skipStateSequence = gameResultResponse.getSkipState();
+                String modifiedStr = skipStateSequence.substring(0, skipStateSequence.length() - 1);
+                gameResultResponse.setSkipState(modifiedStr + "Y");
             }
 
 
@@ -991,8 +980,7 @@ public class SicBoController {
         gameResponse.setConfidence(gameResultResponse.getConfidence());
         gameResponse.setVirtualWin(gameResultResponse.getVirtualWin());
         gameResponse.setSkipState(gameResultResponse.getSkipState() == null ? "" : gameResultResponse.getSkipState());
-//        gameResponse.setDateLastUpdated(LocalDateTime.now());
-        // Persist the updated game response
+
         GameResponse newOneGameResponse = gameResponseService.createOrUpdateGameResponse(gameResponse);
 
 
@@ -1016,6 +1004,7 @@ public class SicBoController {
         gameStatusService.save(gameStatus);
 
         gameResultResponse.setGameStatus(gameResultStatus);
+
 
 
         return gameResultResponse;
