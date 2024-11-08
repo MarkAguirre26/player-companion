@@ -348,10 +348,20 @@ public class SicBoController {
             GameParameters gameParameters = getGameParameters();
             int stopTrigger = gameParameters.getStopTrigger();
 
-            if (gameResultResponse.getLossCounter() >= stopTrigger) {
-                gameResultResponse.setSuggestedBetUnit(0);
-            }
+            if (stopTrigger > 0) {
 
+                if (gameResultResponse.getLossCounter() >= stopTrigger) {
+                    saveFreezeState(ON);
+                    gameResultResponse.setSuggestedBetUnit(0);
+                }else{
+                    if(gameResultResponse.getSequence().replace("1111","").length() > 1){
+                        saveFreezeState(OFF);
+                    }else{
+                        saveFreezeState(ON);
+                    }
+
+                }
+            }
 
             GameResultResponse gameResultResponseWithTrailingStop = trailingStop(gameResultResponse, false);
             //evaluate trailing stop
@@ -372,11 +382,15 @@ public class SicBoController {
             int stopProfit = gameParameters.getStopProfit();
 
 
-            if (stopProfit > 0) {
+            if (stopProfit > 0 && gameResultResponse.getSequence().length() > 1 && gameResultResponse.getSuggestedBetUnit() > 0) {
                 if (gameResultResponse.getGameStatus().getProfit() >= stopProfit) {
                     gameResultResponse.setMessage(STOP_PROFIT_REACHED);
                     return provideGameResponse(gameResultResponse);
                 }
+            } else {
+
+
+
             }
 
 
@@ -385,6 +399,8 @@ public class SicBoController {
             int virtualWin = gameParameters.getVirtualWin();
 
             if (stopTrigger > 0 && virtualWin > 0) {
+
+
 
 
                 if (gameResultResponse.getHandResult() != null) {
@@ -400,9 +416,9 @@ public class SicBoController {
                     String virtualWinKey = "W".repeat(virtualWin);
 
                     boolean isGoodToBet = TriggerFinder.isGoodToBet(gameResultResponse.getHandResult(), virtualWinKey);
-                    if (isGoodToBet) {
+                    if (isGoodToBet && gameResultResponse.getSequence().length() > 1) {
                         saveFreezeState(OFF);
-                    } else {
+                    }else{
 //                        saveFreezeState(ON);
                     }
 
@@ -418,8 +434,32 @@ public class SicBoController {
                     }
 
                 }
+
+
+
+
+
             } else {
-                saveFreezeState(OFF);
+                // TEMPORARY
+//                if (gameResultResponse.getSequence().length() > 1 && gameResultResponse.getSuggestedBetUnit() != 0) {
+//                    saveFreezeState(OFF);
+//                } else {
+//                    if(gameResultResponse.getSequence().length() <=1){
+//                    saveFreezeState(ON);
+//                        System.out.println("here a");
+//                    }else{
+//                        saveFreezeState(OFF);
+//                        System.out.println("here b");
+//                    }
+//
+//                }
+
+                if(gameResultResponse.getSequence().replace("1111","").length() > 1){
+                    saveFreezeState(OFF);
+                }else{
+                    saveFreezeState(ON);
+                }
+
             }
 
 
@@ -431,7 +471,8 @@ public class SicBoController {
 
             if (stopTrigger == 0 && virtualWin == 0) {
                 if (gameResultResponse.getMessage().equals(PREDICTION_CONFIDENCE_LOW) &&
-                        gameResultResponse.getConfidence() >= CONFIDENCE_THRESHOLD) {
+                        gameResultResponse.getConfidence() >= CONFIDENCE_THRESHOLD
+                ) {
                     gameResultResponse.setMessage(PLACE_YOUR_BET);
                 }
             }
@@ -447,14 +488,10 @@ public class SicBoController {
                 gameResultResponse.setSuggestedBetUnit(betSize);
             } else {
                 gameResultResponse.setSuggestedBetUnit(0);
-
-                String skipStateSequence = gameResultResponse.getSkipState();
-//                char lastCharFromSkipStateSequence = skipStateSequence.charAt(skipStateSequence.length() - 1);
-
-                String modifiedStr = skipStateSequence.substring(0, skipStateSequence.length() - 1);
-
-
-                gameResultResponse.setSkipState(modifiedStr + "Y");
+//
+//                String skipStateSequence = gameResultResponse.getSkipState();
+//                String modifiedStr = skipStateSequence.substring(0, skipStateSequence.length() - 1);
+//                gameResultResponse.setSkipState(modifiedStr + "Y");
             }
 
 
@@ -561,7 +598,7 @@ public class SicBoController {
                 .map(Config::getValue)
                 .map(ON::equals)
                 .orElse(false);
-    }
+     }
 
 
     private GameResultResponse updateProfitAndFund(String predictedBet, String diceSizeValue,
@@ -578,13 +615,18 @@ public class SicBoController {
 
         String previousPrediction = predictedBet.equals(SMALL) ? "s" : predictedBet.equals(BIG) ? "b" : "t";
 
+        String sequence = gameResultResponse.getSequence();
 
-        if (previousPrediction.equals(diceSizeValue)) {
+
+        if (previousPrediction.equals(diceSizeValue) && sequence.replace("1111","").length() >1) {
 
 
             profit = (isFrozen() ? profit : profit + suggestedUnit);
             playingUnit += suggestedUnit;
+
             totalWins++;
+
+
             currentLossCount = 0;
             gameResultResponse.setHandResult(gameResultResponse.getHandResult() + "W");
             gameResultResponse.setMessage(PLACE_YOUR_BET);
@@ -599,11 +641,16 @@ public class SicBoController {
                 }
 
                 profit = (isFrozen() ? profit : profit - suggestedUnit);
+
+
                 playingUnit -= suggestedUnit;
                 totalLosses++;
+
+
                 gameResultResponse.setHandResult(gameResultResponse.getHandResult() + "L");
             }
         }
+
 
         GameResultStatus gameResultStatus = gameResultResponse.getGameStatus();
         gameResultStatus.setProfit(profit);
@@ -621,7 +668,11 @@ public class SicBoController {
     public ResponseEntity<String> freezeState(@RequestParam String onOff) {
         try {
 
+
+
             saveFreezeState(onOff);
+
+
             // Return success with the updated value
             return ResponseEntity.ok(onOff);
 
@@ -788,6 +839,8 @@ public class SicBoController {
 
             initialize(gameResultResponse);
 
+            saveFreezeState(ON);
+
             logger.info(userPrincipal.getUsername() + ": Game state reset!");
 
             String p = grr.getGameStatus().getProfit() < 0 ? "lost" : "won";
@@ -827,9 +880,9 @@ public class SicBoController {
         gameResultResponse.setSequence("1111");
         gameResultResponse.setDiceNumber("1111");
         gameResultResponse.setMessage("Game reset!");
-        gameResultResponse.setBaseBetUnit(1);
+        gameResultResponse.setBaseBetUnit(0);
         gameResultResponse.setInitialPlayingUnits(100);
-        gameResultResponse.setSuggestedBetUnit(1);
+        gameResultResponse.setSuggestedBetUnit(0);
         gameResultResponse.setLossCounter(0);
         gameResultResponse.setRecommendedBet(WAIT);
         gameResultResponse.setRiskLevel(RiskLevel.LOW.getValue());

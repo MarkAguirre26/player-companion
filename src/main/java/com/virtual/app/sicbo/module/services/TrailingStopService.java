@@ -33,12 +33,12 @@ public class TrailingStopService {
     }
 
     public TrailingStop getTrailingStopByUserUuid(String userUuid) {
-        return trailingStopRepository.findByUserUuid(userUuid);
+        return trailingStopRepository.findByUserUuidLimit1(userUuid);
     }
 
 
     public void deleteTrailingStopByUserUuid(String userUuid) {
-        TrailingStop trailingStop = trailingStopRepository.findByUserUuid(userUuid);
+        TrailingStop trailingStop = trailingStopRepository.findByUserUuidLimit1(userUuid);
         if (trailingStop != null) {
             trailingStopRepository.deleteById(trailingStop.getTrailingStopId());
         }

@@ -16,14 +16,14 @@ import java.util.Arrays;
 import java.util.Optional;
 
 @Service
-public class ApiService {
+public class SicBoEvoApiService {
 
     private final DiceService diceService;
     private final WebSocketMessageService messageService;
     private final RestTemplate restTemplate;
     private JsonNode lastData; // To store the last fetched data
 
-    public ApiService(DiceService diceService, WebSocketMessageService messageService, RestTemplate restTemplate) {
+    public SicBoEvoApiService(DiceService diceService, WebSocketMessageService messageService, RestTemplate restTemplate) {
         this.diceService = diceService;
         this.messageService = messageService;
         this.restTemplate = restTemplate;

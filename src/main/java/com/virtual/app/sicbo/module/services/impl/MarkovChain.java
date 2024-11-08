@@ -19,13 +19,14 @@ public class MarkovChain {
      */
     public Optional<Pair<Character, Double>> predictNext(String sequenceInput) {
 
+        int chunckValue = 20;
 
         String sequence = "";
-        if(sequenceInput.length() > 40){
-            sequence = sequenceInput.substring((sequenceInput.length() / 40) * 40);
+        if(sequenceInput.length() > chunckValue){
+            sequence = sequenceInput.substring((sequenceInput.length() / chunckValue) * chunckValue);
 
             if(sequence.isEmpty()){
-                sequence = sequenceInput.substring(sequenceInput.length() - 40);
+                sequence = sequenceInput.substring(sequenceInput.length() - chunckValue);
             }
 
         }else{

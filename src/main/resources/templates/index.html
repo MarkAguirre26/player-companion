@@ -1078,7 +1078,7 @@
                 try {
                     const response = await $.post('/api/sicBo/play', $.param({
                         userInput,
-                        recommendedBet: $('#recommendedBet').text(),
+                        recommendedBet: $('#recommendedBet').text() === 'Small'?'Big':'Small',
                         suggestedUnit: $('#suggestedBetUnit').text()
                     }));
 
@@ -1158,12 +1158,12 @@
                     
                     <span style="width: 45px;" class="${statusMessage === 'Wait for virtual win.' ? 'text-sm'
                         : response.recommendedBet.includes('Wait') ? 'text-sm'
-                            : response.recommendedBet == 'Small' ? 'h-5 bg-blue-500 text-sm text-white flex items-center justify-center rounded shadow-lg'
-                                : response.recommendedBet == 'Big' ? 'h-5 bg-red-500 text-sm text-white flex items-center justify-center rounded shadow-lg' :
+                            : response.recommendedBet == 'Small' ? 'h-5 bg-red-500 text-sm text-white flex items-center justify-center rounded shadow-lg'
+                                : response.recommendedBet == 'Big' ? 'h-5 bg-blue-500 text-sm text-white flex items-center justify-center rounded shadow-lg' :
                                     'w-20 h-5 bg-green-500 text-sm text-white flex items-center justify-center rounded shadow-lg'}">
                         ${statusMessage === 'Wait for virtual win.' ? 'Wait..'
                         : statusMessage.includes('Wait') ? 'Wait..'
-                            : response.recommendedBet}
+                            : response.recommendedBet  == 'Small'?"Big":"Small"}
                     </span>
                     </div>
                 
@@ -1176,7 +1176,7 @@
 
 
 
-                if (statusMessage.includes("Restart") || statusMessage.includes("Daily limit")) {
+                if (statusMessage.includes("Restart")) {
 
 
                     $('#infoHeader').text("Game Over");

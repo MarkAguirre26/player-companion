@@ -1,16 +1,16 @@
 package com.virtual.app.sicbo.config;
 
 
-import com.virtual.app.sicbo.module.services.impl.ApiService;
+import com.virtual.app.sicbo.module.services.impl.SicBoEvoApiService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ScheduledApiCaller {
 
-    private final ApiService apiService;
+    private final SicBoEvoApiService apiService;
 
-    public ScheduledApiCaller(ApiService apiService) {
+    public ScheduledApiCaller(SicBoEvoApiService apiService) {
         this.apiService = apiService;
     }
 
