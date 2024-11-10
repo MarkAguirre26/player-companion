@@ -19,7 +19,7 @@ public class MarkovChain {
      */
     public Optional<Pair<Character, Double>> predictNext(String sequenceInput) {
 
-        int chunckValue = 20;
+        int chunckValue = 40;
 
         String sequence = "";
         if(sequenceInput.length() > chunckValue){
