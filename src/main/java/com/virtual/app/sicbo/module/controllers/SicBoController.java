@@ -120,10 +120,16 @@ public class SicBoController {
 
         GameResultResponse gameResultResponse = updateSequenceAndUpdateHandCount(existingGame, diceSizeValue, userInputSmallOrBig);
 
+        GameParameters gameParameters = getGameParameters();
+
+        int chunkSize = 20;
+        if (gameParameters.getMoneyManagement().equals(Strategies.KISS_MODIFIED.getValue())) {
+            chunkSize = 10;
+        }
 
         // Generate predictions using Markov chain and pattern recognition
         String sequence = gameResultResponse.getSequence();
-        Optional<Pair<Character, Double>> markovPrediction = markovChain.predictNext(sequence);
+        Optional<Pair<Character, Double>> markovPrediction = markovChain.predictNext(sequence, chunkSize);
 
         // Combine predictions and handle the bet
         Pair<Character, Double> combinedPrediction = combinePredictions(markovPrediction);
@@ -313,6 +319,8 @@ public class SicBoController {
 
 //        gameResultResponse.setRecommendedBet(WAIT);
 
+        GameParameters gameParameters = getGameParameters();
+
 
         if (hasReachedStopLoss(gameResultResponse)) {
             logger.warn(": Reached stop loss. New profit: {}, New playing fund: {}", profit, playingUnit);
@@ -334,9 +342,29 @@ public class SicBoController {
 
                     betSize = BaccaratBetting.rLiza(gameResultResponse);
 
+                } else if (currentStrategy.equals(Strategies.KISS_123.getValue())) {
+                    betSize = BaccaratBetting.kiss123(gameResultResponse);
                 } else if (currentStrategy.equals(Strategies.KISS_MODIFIED.getValue())) {
                     betSize = BaccaratBetting.kissModifiedBetting(gameResultResponse);
+                    int currentProfit = gameResultResponse.getGameStatus().getProfit();
+
+//                    betSize = switch (currentProfit) {
+//                        case 0 -> 1;
+//                        case -1 -> 2;
+//                        case -2 -> 3;
+//                        case -3 -> 4;
+//                        default -> betSize;
+//                    };
+
+                    if (currentProfit == 3 & betSize == 4) {
+                        betSize = 1;
+                    }
+
+
+                } else if (currentStrategy.equals(Strategies.REVERSE_LABOUCHERE.getValue())) {
+                    betSize = BaccaratBetting.reverseLabouchere(gameResultResponse, gameParameters.getStopLoss());
                 }
+
             }
 
 
@@ -345,7 +373,7 @@ public class SicBoController {
 
             gameResultResponse.setRecommendedBet(nextPredictedBet);
 
-            GameParameters gameParameters = getGameParameters();
+
             int stopTrigger = gameParameters.getStopTrigger();
 
             if (stopTrigger > 0) {
@@ -353,11 +381,11 @@ public class SicBoController {
                 if (gameResultResponse.getLossCounter() >= stopTrigger) {
                     saveFreezeState(ON);
                     gameResultResponse.setSuggestedBetUnit(0);
-                }else{
-                    if(gameResultResponse.getSequence().replace("1111","").length() > 1){
+                } else {
+                    if (gameResultResponse.getSequence().replace("1111", "").length() > 1) {
                         saveFreezeState(OFF);
 
-                    }else{
+                    } else {
                         saveFreezeState(ON);
                     }
 
@@ -391,7 +419,6 @@ public class SicBoController {
             } else {
 
 
-
             }
 
 
@@ -400,8 +427,6 @@ public class SicBoController {
             int virtualWin = gameParameters.getVirtualWin();
 
             if (stopTrigger > 0 && virtualWin > 0) {
-
-
 
 
                 if (gameResultResponse.getHandResult() != null) {
@@ -419,7 +444,7 @@ public class SicBoController {
                     boolean isGoodToBet = TriggerFinder.isGoodToBet(gameResultResponse.getHandResult(), virtualWinKey);
                     if (isGoodToBet && gameResultResponse.getSequence().length() > 1) {
                         saveFreezeState(OFF);
-                    }else{
+                    } else {
 //                        saveFreezeState(ON);
                     }
 
@@ -437,14 +462,11 @@ public class SicBoController {
                 }
 
 
-
-
-
             } else {
 
-                if(gameResultResponse.getSequence().replace("1111","").length() > 1){
+                if (gameResultResponse.getSequence().replace("1111", "").length() > 1) {
                     saveFreezeState(OFF);
-                }else{
+                } else {
                     saveFreezeState(ON);
                 }
 
@@ -469,13 +491,16 @@ public class SicBoController {
             System.out.println("CONFIDENCE_THRESHOLD:" + CONFIDENCE_THRESHOLD);
             System.out.println("confidence:" + gameResultResponse.getConfidence());
 
+
             String isSKippedValue = isFrozen() ? "Y" : "N";
             String currentSkipState = gameResultResponse.getSkipState() == null ? "" : gameResultResponse.getSkipState();
             gameResultResponse.setSkipState(currentSkipState + isSKippedValue);
 
+
             if (!isFrozen() && !gameResultResponse.getMessage().equals(PREDICTION_CONFIDENCE_LOW)) {
                 gameResultResponse.setSuggestedBetUnit(betSize);
             } else {
+
                 gameResultResponse.setSuggestedBetUnit(0);
                 saveFreezeState(ON);//
                 String skipStateSequence = gameResultResponse.getSkipState();
@@ -587,7 +612,7 @@ public class SicBoController {
                 .map(Config::getValue)
                 .map(ON::equals)
                 .orElse(false);
-     }
+    }
 
 
     private GameResultResponse updateProfitAndFund(String predictedBet, String diceSizeValue,
@@ -607,7 +632,7 @@ public class SicBoController {
         String sequence = gameResultResponse.getSequence();
 
 
-        if (previousPrediction.equals(diceSizeValue) && sequence.replace("1111","").length() >1) {
+        if (previousPrediction.equals(diceSizeValue) && sequence.replace("1111", "").length() > 1) {
 
 
             profit = (isFrozen() ? profit : profit + suggestedUnit);
@@ -656,7 +681,6 @@ public class SicBoController {
     @PostMapping("/freeze-state")
     public ResponseEntity<String> freezeState(@RequestParam String onOff) {
         try {
-
 
 
             saveFreezeState(onOff);
@@ -1004,7 +1028,6 @@ public class SicBoController {
         gameStatusService.save(gameStatus);
 
         gameResultResponse.setGameStatus(gameResultStatus);
-
 
 
         return gameResultResponse;
