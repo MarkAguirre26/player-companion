@@ -124,7 +124,9 @@ public class SicBoController {
 
         int chunkSize = 20;
         if (gameParameters.getMoneyManagement().equals(Strategies.KISS_MODIFIED.getValue())
-        || gameParameters.getMoneyManagement().equals(Strategies.RGP.getValue())) {
+                || gameParameters.getMoneyManagement().equals(Strategies.RGP.getValue())
+                || gameParameters.getMoneyManagement().equals(Strategies.HIGH.getValue())
+        ) {
             chunkSize = 10;
         }
 
@@ -347,6 +349,8 @@ public class SicBoController {
                     betSize = BaccaratBetting.kiss123(gameResultResponse);
                 } else if (currentStrategy.equals(Strategies.RGP.getValue())) {
                     betSize = BaccaratBetting.rgp(gameResultResponse);
+                } else if (currentStrategy.equals(Strategies.HIGH.getValue())) {
+                    betSize = BaccaratBetting.high(gameResultResponse);
                 } else if (currentStrategy.equals(Strategies.KISS_MODIFIED.getValue())) {
 
                     betSize = BaccaratBetting.kissModifiedBetting(gameResultResponse);
