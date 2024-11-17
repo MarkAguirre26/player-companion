@@ -123,7 +123,8 @@ public class SicBoController {
         GameParameters gameParameters = getGameParameters();
 
         int chunkSize = 20;
-        if (gameParameters.getMoneyManagement().equals(Strategies.KISS_MODIFIED.getValue())) {
+        if (gameParameters.getMoneyManagement().equals(Strategies.KISS_MODIFIED.getValue())
+        || gameParameters.getMoneyManagement().equals(Strategies.RGP.getValue())) {
             chunkSize = 10;
         }
 
@@ -344,20 +345,19 @@ public class SicBoController {
 
                 } else if (currentStrategy.equals(Strategies.KISS_123.getValue())) {
                     betSize = BaccaratBetting.kiss123(gameResultResponse);
+                } else if (currentStrategy.equals(Strategies.RGP.getValue())) {
+                    betSize = BaccaratBetting.rgp(gameResultResponse);
                 } else if (currentStrategy.equals(Strategies.KISS_MODIFIED.getValue())) {
+
                     betSize = BaccaratBetting.kissModifiedBetting(gameResultResponse);
                     int currentProfit = gameResultResponse.getGameStatus().getProfit();
 
-//                    betSize = switch (currentProfit) {
-//                        case 0 -> 1;
-//                        case -1 -> 2;
-//                        case -2 -> 3;
-//                        case -3 -> 4;
-//                        default -> betSize;
-//                    };
 
-                    if (currentProfit == 3 & betSize == 4) {
+                    if (((currentProfit == 3 || currentProfit == 0) && betSize == 4)
+                            || currentProfit == 0 && betSize == 2) {
                         betSize = 1;
+                    } else if (currentProfit == -1 && betSize == 4 || currentProfit == 1 && betSize == 4) {
+                        betSize = 2;
                     }
 
 

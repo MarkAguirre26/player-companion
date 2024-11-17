@@ -14,6 +14,7 @@ public enum Strategies {
     KISS_123("KISS_123"),
     KISS_MODIFIED("KISS_MODIFIED"),
     FLAT("FLAT"),
+    RGP("RGP"),
     REVERSE_LABOUCHERE("REVERSE_LABOUCHERE"),
     STRATEGY("STRATEGY");
    
