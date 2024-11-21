@@ -32,12 +32,10 @@ public class SicBoController {
 
     private static final String STOP_PROFIT_REACHED = "Stop profit reached! Restart the game.";
     private static final String STOP_LOSS_REACHED = "Stop loss reached! Restart the game.";
-    private static final String DAILY_LIMIT_REACHED = "Daily limit! Please play again after ";
     private static final String PREDICTION_CONFIDENCE_LOW = "Prediction confidence too low, no bet suggested.";
     private static final String TRAILING_STOP_TRIGGERED_LABEL = "Trailing stop triggered! Restart the game.";
     private static final String PLACE_YOUR_BET = "Place your bet";
-    private static final String YOU_WON = "You won!";
-    private static final String YOU_LOST = "You lost!";
+
     private static final int ZERO = 0;
     private static final String ON = "ON";
     private static final String OFF = "OFF";
@@ -55,17 +53,20 @@ public class SicBoController {
     private final UserConfigService configService;
     private final WebSocketMessageService messageService;
     private final GameParametersService gameParametersService;
-    private final DiceService diceService;
+
 
     private final String WAIT = "Wait..";
     private final String SMALL = "Small";
     private final String BIG = "Big";
-    //    private final String WAIT_FOR_VIRTUAL_WIN = "Wait for virtual win.";
-    private final String VIRTUAL_WON = "Virtual won!";
+
 
 
     @Autowired
-    public SicBoController(MarkovChain markovChain, JournalServiceImpl journalService, GameStatusService gameStatusService, GameResponseService gameResponseService, TrailingStopService trailingStopService, GamesArchiveService gamesArchiveService, UserConfigService configService, WebSocketMessageService messageService, GameParametersService gameParametersService, DiceService diceService) {
+    public SicBoController(MarkovChain markovChain, JournalServiceImpl journalService,
+                           GameStatusService gameStatusService, GameResponseService gameResponseService,
+                           TrailingStopService trailingStopService, GamesArchiveService gamesArchiveService,
+                           UserConfigService configService, WebSocketMessageService messageService,
+                           GameParametersService gameParametersService) {
         this.markovChain = markovChain;
 
         this.journalService = journalService;
@@ -74,11 +75,9 @@ public class SicBoController {
         this.trailingStopService = trailingStopService;
         this.gamesArchiveService = gamesArchiveService;
         this.configService = configService;
-
         this.messageService = messageService;
         this.gameParametersService = gameParametersService;
 
-        this.diceService = diceService;
     }
 
 
@@ -206,24 +205,6 @@ public class SicBoController {
 
     }
 
-//    private String currentStrategy() {
-//
-//        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        String userUuid = userPrincipal.getUserUuid();
-//        Config strategyConfig = configService.findByUserUuidAndName(userUuid, Strategies.STRATEGY.getValue())
-//                .stream()
-//                .filter(config -> config.getName().equals(Strategies.STRATEGY.getValue()))
-//                .findFirst()
-//                .orElse(null);
-//
-//        if (strategyConfig != null) {
-//            return strategyConfig.getValue();
-//        } else {
-//            setStrategy(Strategies.FLAT.getValue());
-//            return Strategies.FLAT.getValue();
-//        }
-//
-//    }
 
     private GameResultResponse updateSequenceAndUpdateHandCount(GameResultResponse existingGame, String diceSizeValue, String diceSum) {
 
@@ -320,7 +301,6 @@ public class SicBoController {
         gameResultResponse.setSequence(gameResultResponse.getSequence());
         gameResultResponse.setDiceNumber(gameResultResponse.getDiceNumber());
 
-//        gameResultResponse.setRecommendedBet(WAIT);
 
         GameParameters gameParameters = getGameParameters();
 
@@ -329,7 +309,6 @@ public class SicBoController {
             logger.warn(": Reached stop loss. New profit: {}, New playing fund: {}", profit, playingUnit);
             gameResultResponse.setMessage(STOP_LOSS_REACHED);
             gameResultResponse.setSuggestedBetUnit(0);
-//            gameResultResponse.setRecommendedBet(WAIT);
 
             return provideGameResponse(gameResultResponse);
         } else {
@@ -344,7 +323,8 @@ public class SicBoController {
                 } else if (currentStrategy.equals(Strategies.RLIZA.getValue())) {
 
                     betSize = BaccaratBetting.rLiza(gameResultResponse);
-
+                } else if (currentStrategy.equals(Strategies.ED.getValue())) {
+                    betSize = BaccaratBetting.ed(gameResultResponse);
                 } else if (currentStrategy.equals(Strategies.KISS_123.getValue())) {
                     betSize = BaccaratBetting.kiss123(gameResultResponse);
                 } else if (currentStrategy.equals(Strategies.RGP.getValue())) {
@@ -434,6 +414,8 @@ public class SicBoController {
 
 
                 if (gameResultResponse.getHandResult() != null) {
+
+                    boolean s = isFrozen() ;
 
                     String stopTriggerKey = "L".repeat(stopTrigger);
                     String stopTriggerKeyValue = TriggerFinder.getLastPart(gameResultResponse.getHandResult(), stopTriggerKey);
@@ -636,7 +618,8 @@ public class SicBoController {
         String sequence = gameResultResponse.getSequence();
 
 
-        if (previousPrediction.equals(diceSizeValue) && sequence.replace("1111", "").length() > 1) {
+        if (previousPrediction.equals(diceSizeValue) &&
+                sequence.replace("1111", "").length() > 1) {
 
 
             profit = (isFrozen() ? profit : profit + suggestedUnit);

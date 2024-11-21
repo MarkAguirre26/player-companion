@@ -152,17 +152,51 @@ public class BaccaratBetting {
                     currentBetUnit = progression[currentStage] * initialBet;
                 }
             } else {
-//                  if(gameResultResponse.getLossCounter() >= 1){
-//                      currentBetUnit = initialBet;
-//                    currentStage = 0;
-//                  }
+
             }
         }
 
         return currentBetUnit;  // Return the last progression value used
     }
 
-//    1, 2, 3
+
+    //    -1, +2
+    public static int ed(GameResultResponse gameResultResponse) {
+
+        String handResult = gameResultResponse.getHandResult().replace("null", "");
+        String skipSequence = gameResultResponse.getSkipState();
+
+        // Ensure both sequences have the same length to avoid errors
+        if (handResult.isEmpty()) {
+            return 1;
+        }
+
+        // 1-3-2-6 progression bets
+        int bet = 1;
+        // Iterate through the results and skip states
+        for (int i = 0; i < handResult.length(); i++) {
+            char outcome = handResult.charAt(i);
+            char skipOutcome = skipSequence.charAt(i);
+
+            // Only proceed if not skipped
+            if (skipOutcome == 'N') {
+                if (outcome == 'W') {
+                    if (bet >= 3) {
+                        bet -= 2;
+                    }
+
+
+                } else if (outcome == 'L') {
+                    bet++;
+                }
+            }
+        }
+
+        return bet <= 0 ? 1 : bet;
+    }
+
+
+    //    1, 2, 3
     public static int kiss123(GameResultResponse gameResultResponse) {
 
         String handResult = gameResultResponse.getHandResult().replace("null", "");
