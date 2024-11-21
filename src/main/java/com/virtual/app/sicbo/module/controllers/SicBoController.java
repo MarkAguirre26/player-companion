@@ -415,7 +415,6 @@ public class SicBoController {
 
                 if (gameResultResponse.getHandResult() != null) {
 
-                    boolean s = isFrozen() ;
 
                     String stopTriggerKey = "L".repeat(stopTrigger);
                     String stopTriggerKeyValue = TriggerFinder.getLastPart(gameResultResponse.getHandResult(), stopTriggerKey);
@@ -431,7 +430,7 @@ public class SicBoController {
                     if (isGoodToBet && gameResultResponse.getSequence().length() > 1) {
                         saveFreezeState(OFF);
                     } else {
-//                        saveFreezeState(ON);
+                        saveFreezeState(ON);
                     }
 
 

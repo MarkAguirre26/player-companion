@@ -23,38 +23,45 @@ public class TriggerFinder {
     }
 
 
-    public static String getLastPart(String input, String key) {
+//    public static String getLastPart(String input, String key) {
+//
+//        int count = key.length();
+//        // Validate input
+//        if (!isValidInput(input, count)) {
+//            return "";
+//        }
+//
+//        int length = input.length();
+//        char lastChar = input.charAt(length - 1);
+//        StringBuilder result = new StringBuilder();
+//
+//        // Iterate backwards through the string and collect characters
+//        for (int i = length - 1; i >= 0; i--) {
+//            if (input.charAt(i) == lastChar) {
+//                result.append(lastChar);
+//                // Stop if we have collected enough characters
+//                if (result.length() == count) {
+//                    break;
+//                }
+//            } else {
+//                // If we encounter a different character, update lastChar
+//                lastChar = input.charAt(i);
+//            }
+//        }
+//
+//        // Return the result in reverse order
+//        return result.reverse().toString();
+//    }
 
-        int count = key.length();
-        // Validate input
-        if (!isValidInput(input, count)) {
+    public static String getLastPart(String sequence, String key) {
+        if (!isValidInput(sequence, key.length())) {
             return "";
         }
-
-        int length = input.length();
-        char lastChar = input.charAt(length - 1);
-        StringBuilder result = new StringBuilder();
-
-        // Iterate backwards through the string and collect characters
-        for (int i = length - 1; i >= 0; i--) {
-            if (input.charAt(i) == lastChar) {
-                result.append(lastChar);
-                // Stop if we have collected enough characters
-                if (result.length() == count) {
-                    break;
-                }
-            } else {
-                // If we encounter a different character, update lastChar
-                lastChar = input.charAt(i);
-            }
-        }
-
-        // Return the result in reverse order
-        return result.reverse().toString();
+        return sequence.substring(sequence.length() - key.length());
     }
 
     private static boolean isValidInput(String input, int count) {
-        return input != null && !input.isEmpty() && count > 0;
+        return input != null && !input.isEmpty() && input.length() > count;
     }
 
 
