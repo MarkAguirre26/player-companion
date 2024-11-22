@@ -121,6 +121,15 @@ public class GameParametersController {
         // Calculate current fund based on starting fund and profit
         currentFund = calculateCurrentFund(gameParameters.get().getStartingFund(), profit, betAmount);
 
+        if(gameParameters.get().getTrailingStopActivation() == null){
+            gameParameters.get().setTrailingStopActivation(0);
+            gameParameters.get().setTrailingStopSpread(0);
+        }
+
+        if(gameParameters.get().getStopTrigger() == null){
+            gameParameters.get().setStopTrigger(0);
+            gameParameters.get().setVirtualWin(0);
+        }
 
         gameParameters.get().setBetAmount(betAmount);
         gameParameters.get().setCurrentFund(currentFund);

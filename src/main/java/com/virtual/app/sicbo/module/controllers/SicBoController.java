@@ -60,7 +60,6 @@ public class SicBoController {
     private final String BIG = "Big";
 
 
-
     @Autowired
     public SicBoController(MarkovChain markovChain, JournalServiceImpl journalService,
                            GameStatusService gameStatusService, GameResponseService gameResponseService,
@@ -358,24 +357,6 @@ public class SicBoController {
             gameResultResponse.setRecommendedBet(nextPredictedBet);
 
 
-            int stopTrigger = gameParameters.getStopTrigger();
-
-            if (stopTrigger > 0) {
-
-                if (gameResultResponse.getLossCounter() >= stopTrigger) {
-                    saveFreezeState(ON);
-                    gameResultResponse.setSuggestedBetUnit(0);
-                } else {
-                    if (gameResultResponse.getSequence().replace("1111", "").length() > 1) {
-                        saveFreezeState(OFF);
-
-                    } else {
-                        saveFreezeState(ON);
-                    }
-
-                }
-            }
-
             GameResultResponse gameResultResponseWithTrailingStop = trailingStop(gameResultResponse, false);
             //evaluate trailing stop
             if (gameParameters.getTrailingStopSpread() > 0 && gameParameters.getTrailingStopActivation() > 0) {
@@ -408,6 +389,9 @@ public class SicBoController {
 
 //          SET FREEZE STATE----------------------------------------------------
 
+            int stopTrigger = gameParameters.getStopTrigger();
+
+
             int virtualWin = gameParameters.getVirtualWin();
 
             if (stopTrigger > 0 && virtualWin > 0) {
@@ -416,21 +400,46 @@ public class SicBoController {
                 if (gameResultResponse.getHandResult() != null) {
 
 
-                    String stopTriggerKey = "L".repeat(stopTrigger);
-                    String stopTriggerKeyValue = TriggerFinder.getLastPart(gameResultResponse.getHandResult(), stopTriggerKey);
+//                    String stopTriggerKey = "L".repeat(stopTrigger);
+//                    String stopTriggerKeyValue = TriggerFinder.getLastPart(gameResultResponse.getHandResult(), stopTriggerKey);
+//                    if (stopTriggerKey.equals(stopTriggerKeyValue)) {
+//                        saveFreezeState(ON);
+//                    }
 
-                    if (stopTriggerKey.equals(stopTriggerKeyValue)) {
+
+                    if (gameResultResponse.getLossCounter() >= stopTrigger) {
                         saveFreezeState(ON);
-                    }
-
-
-                    String virtualWinKey = "W".repeat(virtualWin);
-
-                    boolean isGoodToBet = TriggerFinder.isGoodToBet(gameResultResponse.getHandResult(), virtualWinKey);
-                    if (isGoodToBet && gameResultResponse.getSequence().length() > 1) {
-                        saveFreezeState(OFF);
+                        gameResultResponse.setSuggestedBetUnit(0);
                     } else {
-                        saveFreezeState(ON);
+                        if (gameResultResponse.getSequence().replace("1111", "").length() > 1) {
+//                            saveFreezeState(OFF);
+
+                            String virtualWinKey = "W".repeat(virtualWin);
+
+                            boolean isGoodToBet = TriggerFinder.isGoodToBet(gameResultResponse.getHandResult(), virtualWinKey);
+                            if (isGoodToBet && gameResultResponse.getSequence().length() > 1) {
+                                saveFreezeState(OFF);
+                            } else {
+//                                saveFreezeState(ON);// to do
+                                String stopTriggerKey = "L".repeat(stopTrigger);
+                                String stopTriggerKeyValue = TriggerFinder.getLastPart(gameResultResponse.getHandResult(), stopTriggerKey);
+                                if (stopTriggerKey.equals(stopTriggerKeyValue)) {
+                                    saveFreezeState(ON);
+                                }else{
+//                                    saveFreezeState(OFF);
+                                }
+
+                            }
+
+
+                        } else {
+
+                            saveFreezeState(ON);
+
+
+
+                        }
+
                     }
 
 
@@ -955,13 +964,6 @@ public class SicBoController {
         response.setGameStatus(gameResultStatus);
 
 
-//        TrailingStop trailingStop = trailingStopService.getTrailingStopByUserUuid(userPrincipal.getUserUuid());
-//        if (trailingStop != null) {
-//            response.setTrailingStop(String.valueOf(trailingStop.getStopProfit()));
-//        } else {
-//            response.setTrailingStop("0");
-//        }
-        // Log the response
         logger.info("{}: Game Response-> {}", userPrincipal.getUsername(), response);
 
         // Return the populated GameResultResponse
