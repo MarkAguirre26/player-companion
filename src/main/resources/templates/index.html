@@ -342,7 +342,6 @@
                                 </ul>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
@@ -401,6 +400,14 @@
                         class="flex-1 bg-gradient-to-l text-white py-1 rounded transition duration-200 mr-2">
                         Skip
                     </button>
+
+
+                    <button type="button" id="backButton"
+                        class="flex-1 bg-gradient-to-r from-green-700 to-green-800 text-white py-3 rounded hover:from-green-600 hover:to-green-700 transition duration-300 shadow-lg ml-2">
+                        BACK
+                    </button>
+
+
                 </div>
 
 
@@ -831,11 +838,6 @@
                 // const bigButton = document.getElementById("bigButton");
 
 
-
-
-
-
-
                 getPauseAndPlay();
                 getFreezeStateAsync();
 
@@ -856,6 +858,9 @@
                 const pauseButton = document.getElementById('pauseButton');
                 const playButton = document.getElementById('playButton');
 
+                const backButton = document.getElementById('backButton');
+
+
 
                 // Check the current page's URL
                 if (!window.location.href.toLowerCase().includes("sicbo")) {
@@ -864,6 +869,10 @@
 
 
 
+                backButton.addEventListener('click', () => {
+                    undoHand();
+
+                });
 
                 pauseButton.addEventListener('click', () => {
                     setPauseAndPlay('pause');
@@ -993,9 +1002,31 @@
                     $('#reverseBet').prop('checked', false);
                 }
 
-
-
             });
+
+
+            function undoHand() {
+                $.ajax({
+                    url: '/api/sicBo/undo', // Change to your API endpoint
+                    type: 'POST',
+                    contentType: 'application/json', // Specify content type                       
+                    success: function (response) {
+                        getPauseAndPlay();
+                        getFreezeStateAsync();
+
+                        (async () => {
+
+                            await getJournal('today');
+                            await currentState();
+
+                        })();
+
+                    },
+                    error: function (xhr, status, error) {
+                        alert('An error occurred: ' + xhr.responseText);
+                    }
+                });
+            }
 
 
             function postGameParameters() {
