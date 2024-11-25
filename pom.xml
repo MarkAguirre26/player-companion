@@ -11,8 +11,8 @@
 	<groupId>com.virtualsoft</groupId>
 	<artifactId>SicBoPlayerCompanion</artifactId>
 	<version>1.10.1</version>
-	<name>Player Companion - SicBo</name>
-	<description>Player Companion SicBo Game Tracker</description>
+	<name>Player Companion - Baccarat</name>
+	<description>Player Companion Baccarat Game Tracker</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -141,7 +141,7 @@
 			</plugin>
 
 		</plugins>
-		<finalName>PlayerCompanion-SicBo</finalName>
+		<finalName>PlayerCompanion</finalName>
 	</build>
 
 

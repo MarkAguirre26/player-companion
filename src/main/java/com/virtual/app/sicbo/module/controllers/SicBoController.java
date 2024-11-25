@@ -124,6 +124,7 @@ public class SicBoController {
         if (gameParameters.getMoneyManagement().equals(Strategies.KISS_MODIFIED.getValue())
                 || gameParameters.getMoneyManagement().equals(Strategies.RGP.getValue())
                 || gameParameters.getMoneyManagement().equals(Strategies.HIGH.getValue())
+                || gameParameters.getMoneyManagement().equals(Strategies.ED.getValue())
         ) {
             chunkSize = 10;
         }
@@ -425,7 +426,7 @@ public class SicBoController {
                                 String stopTriggerKeyValue = TriggerFinder.getLastPart(gameResultResponse.getHandResult(), stopTriggerKey);
                                 if (stopTriggerKey.equals(stopTriggerKeyValue)) {
                                     saveFreezeState(ON);
-                                }else{
+                                } else {
 //                                    saveFreezeState(OFF);
                                 }
 
@@ -435,7 +436,6 @@ public class SicBoController {
                         } else {
 
                             saveFreezeState(ON);
-
 
 
                         }

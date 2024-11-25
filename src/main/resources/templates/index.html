@@ -377,27 +377,26 @@
 
 
                 <!-- ButtonsHere -->
-                <div class="flex justify-between mb-2 ">
+                <div class="flex justify-between mb-2">
                     <button type="button" id="smallButton"
                         class="flex-1 bg-gradient-to-l from-blue-700 to-blue-800 text-white py-3 rounded hover:from-blue-600 hover:to-blue-700 transition duration-300 shadow-lg mr-2">
-                        SMALL
+                        PLAYER
                     </button>
 
 
                     <button type="button" id="bigButton"
                         class="flex-1 bg-gradient-to-r from-red-700 to-red-800 text-white py-3 rounded hover:from-red-600 hover:to-red-700 transition duration-300 shadow-lg ml-2">
-                        BIG
+                        BANKER
                     </button>
 
                     <button type="button" id="trippleButton"
-                        class="flex-1 bg-gradient-to-r from-green-700 to-green-800 text-white py-3 rounded hover:from-green-600 hover:to-green-700 transition duration-300 shadow-lg ml-2">
+                        class="hidden flex-1 bg-gradient-to-r from-green-700 to-green-800 text-white py-3 rounded hover:from-green-600 hover:to-green-700 transition duration-300 shadow-lg ml-2">
                         TRIPPLE
                     </button>
 
-
                 </div>
 
-                <div class="flex  mb-2 hidden">
+                <div class="flex  mb-2">
                     <button type="button" id="skipButton" onclick="turnOnOffSkip()"
                         class="flex-1 bg-gradient-to-l text-white py-1 rounded transition duration-200 mr-2">
                         Skip
@@ -532,8 +531,8 @@
                         <option value="KISS_123">KISS 123</option>
                         <option value="KISS_MODIFIED">KISS MODIFIED</option>
                         <option value="RGP">RGP</option>
-                        <option value="HIGH">HIGH</option>                        
-                        <option value="ED">ED</option> 
+                        <option value="HIGH">HIGH</option>
+                        <option value="ED">ED</option>
                     </select>
 
 
@@ -787,8 +786,8 @@
 
 
 
-                            } 
-                           
+                            }
+
 
 
                         });
@@ -828,6 +827,12 @@
 
             $(document).ready(function () {
 
+                // const smallButton = document.getElementById("smallButton");
+                // const bigButton = document.getElementById("bigButton");
+
+
+
+
 
 
 
@@ -850,6 +855,14 @@
 
                 const pauseButton = document.getElementById('pauseButton');
                 const playButton = document.getElementById('playButton');
+
+
+                // Check the current page's URL
+                if (!window.location.href.toLowerCase().includes("sicbo")) {
+                    pauseButton.style.display = 'none'; // This will hide the element
+                }
+
+
 
 
                 pauseButton.addEventListener('click', () => {
@@ -940,7 +953,14 @@
 
                 getFreezeStateAsync();
 
-                connect();
+
+                if (window.location.href.toLowerCase().includes("sicbo")) {
+                    connect();
+                }
+
+
+
+
 
 
                 postGameParameters();
@@ -1406,7 +1426,14 @@
 
                 const innerElements = column.getElementsByClassName('bg-white');
 
+
                 for (let i = 0; i < innerElements.length + 1; i++) {
+
+                    if (!window.location.href.toLowerCase().includes("sicbo")) {
+                        innerElements.style.display = 'none'; // This will hide the element
+                    }
+
+
                     innerElements[i].textContent = diceSums[i + 1];
 
                 }
@@ -1712,12 +1739,10 @@
                     const isShouldSkip = skipState[index] === 'Y';
 
 
-                    circle.className = `flex items-center justify-center w-5 h-5 rounded-full text-white text-xs ${isWin ? 'bg-green-500' : isLoss ? 'bg-red-500' : 'bg-yellow-500'
-                        }`;
+                    circle.className = `flex items-center justify-center w-5 h-5 rounded-full text-white text-xs ${isWin ? 'bg-green-500' : isLoss ? 'bg-red-500' : 'bg-yellow-500'}`;
 
-                    // circle.innerText = isWin ? 'W' : isLoss ? 'L' : 'S';
-                    // circle.style.color = isShouldSkip ? 'yellow' : 'white'; 
-                    // circle.style.fontWeight = isShouldSkip ? 'bold' : 'normal'; 
+
+
                     circle.classList.add(isShouldSkip ? 'text-yellow-500' : 'text-white');
                     if (isShouldSkip) {
                         circle.classList.add('font-bold');  // Apply bold text if skipState is true

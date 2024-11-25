@@ -82,6 +82,7 @@ public class SecurityConfig {
         http.cors(cors -> cors.configurationSource(request -> {
             CorsConfiguration configuration = new CorsConfiguration();
             configuration.setAllowedOrigins(List.of("https://sicbo.player-companion.com/"));
+             configuration.setAllowedOrigins(List.of("https://player-companion.com/"));
             configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
             configuration.setAllowCredentials(true);
             configuration.setAllowedHeaders(List.of("X-XSRF-TOKEN", "Content-Type", "Authorization"));
