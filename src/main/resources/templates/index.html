@@ -388,6 +388,11 @@
                         BANKER
                     </button>
 
+                    <button type="button" id="backButton"
+                        class="flex-1 bg-gradient-to-r from-green-700 to-green-800 text-white py-3 rounded hover:from-green-600 hover:to-green-700 transition duration-300 shadow-lg ml-2">
+                        BACK
+                    </button>
+
                     <button type="button" id="trippleButton"
                         class="hidden flex-1 bg-gradient-to-r from-green-700 to-green-800 text-white py-3 rounded hover:from-green-600 hover:to-green-700 transition duration-300 shadow-lg ml-2">
                         TRIPPLE
@@ -395,17 +400,12 @@
 
                 </div>
 
-                <div class="flex  mb-2">
+                <div class="flex mb-2 hidden">
                     <button type="button" id="skipButton" onclick="turnOnOffSkip()"
                         class="flex-1 bg-gradient-to-l text-white py-1 rounded transition duration-200 mr-2">
                         Skip
                     </button>
 
-
-                    <button type="button" id="backButton"
-                        class="flex-1 bg-gradient-to-r from-green-700 to-green-800 text-white py-3 rounded hover:from-green-600 hover:to-green-700 transition duration-300 shadow-lg ml-2">
-                        BACK
-                    </button>
 
 
                 </div>
@@ -865,6 +865,7 @@
                 // Check the current page's URL
                 if (!window.location.href.toLowerCase().includes("sicbo")) {
                     pauseButton.style.display = 'none'; // This will hide the element
+                    playButton.style.display = 'none'; 
                 }
 
 
