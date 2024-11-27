@@ -15,7 +15,7 @@ public class ScheduledApiCaller {
     private final SicBoEvoApiService apiService;
 
     @Value("${game.sicbo}")
-    private String gameSicbo;
+    public String gameSicbo;
 
     // Constructor-based Dependency Injection
     public ScheduledApiCaller(SicBoEvoApiService apiService) {

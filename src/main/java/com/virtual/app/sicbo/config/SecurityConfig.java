@@ -2,6 +2,7 @@ package com.virtual.app.sicbo.config;
 
 import com.virtual.app.sicbo.module.services.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -23,6 +24,8 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Value("${game.sicbo}")
+    public String gameSicbo;
 
     @Autowired
     private UserDetailsService userDetailsService;
@@ -81,8 +84,14 @@ public class SecurityConfig {
 
         http.cors(cors -> cors.configurationSource(request -> {
             CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedOrigins(List.of("https://sicbo.player-companion.com/"));
-//             configuration.setAllowedOrigins(List.of("https://player-companion.com/"));
+            boolean isSicBoEnabled = Boolean.parseBoolean(gameSicbo);
+
+            if(isSicBoEnabled){
+                configuration.setAllowedOrigins(List.of("https://sicbo.player-companion.com/"));
+            }else{
+             configuration.setAllowedOrigins(List.of("https://player-companion.com/"));
+            }
+
             configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE"));
             configuration.setAllowCredentials(true);
             configuration.setAllowedHeaders(List.of("X-XSRF-TOKEN", "Content-Type", "Authorization"));

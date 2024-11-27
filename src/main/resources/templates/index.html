@@ -839,12 +839,11 @@
                 pauseButton.style.display = 'none'; // This will hide the element
                 playButton.style.display = 'none';
                 $("#buttons-collection").removeClass("hidden");
-            }else{
+            } else {
                 // pauseButton.style.display = 'block'; // This will hide the element
                 // playButton.style.display = 'block';
                 $("#buttons-collection").addClass("hidden");
             }
-
 
 
             backButton.addEventListener('click', () => {
@@ -1345,6 +1344,18 @@
                 const text = spanElement.textContent; // Get the text content of the span
                 spanElement.textContent = text.includes("Small") ? "Player" : text.includes("Big") ? "Banker" : text;
 
+
+
+                const handCount = $('#handCount');
+                const handCountText = handCount.text();
+                handCount.text(handCountText.replace("Rolls","Hands"))
+
+                const playedShoe = $('#playedShoe');
+                const playedShoeText = playedShoe.text();
+                playedShoe.text(playedShoeText.replace("Round","Shoe"))
+
+
+
             }
 
 
@@ -1581,7 +1592,15 @@
                     centerContainer.classList.add('flex-none', 'text-center');
                     const shoeHeading = document.createElement('h4');
                     shoeHeading.classList.add('font-semibold', 'text-sm');
-                    shoeHeading.textContent = `Round: ${journal.shoe}`;
+
+                    if (!window.location.href.toLowerCase().includes("sicbo")
+                        && window.location.href.toLowerCase().includes("8081")) {
+                        shoeHeading.textContent = `Shoe: ${journal.shoe}`;
+                    }else{
+                        shoeHeading.textContent = `Round: ${journal.shoe}`;
+                    }
+
+
                     centerContainer.appendChild(shoeHeading);
 
                     // can you aslo put 'statregy' label under the Shoe
@@ -1595,10 +1614,20 @@
                     // Create container for right-aligned content (Hand, Profit)
                     const rightContainer = document.createElement('div');
                     rightContainer.classList.add('flex-grow', 'text-right');
-                    rightContainer.innerHTML = `
+
+
+                    if (!window.location.href.toLowerCase().includes("sicbo")
+                        && window.location.href.toLowerCase().includes("8081")) {
+                        rightContainer.innerHTML = `
+                        <p>Hands: ${journal.hand}</p>
+                        <p>Profit: ${journal.profit}</p>`;
+                    }else{
+                        rightContainer.innerHTML = `
                         <p>Rolls: ${journal.hand}</p>
-                        <p>Profit: ${journal.profit}</p>
-                    `;
+                        <p>Profit: ${journal.profit}</p>`;
+                    }
+
+
 
                     totalProfit += journal.profit;
 

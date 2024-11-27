@@ -124,8 +124,7 @@ public class SicBoController {
         if (gameParameters.getMoneyManagement().equals(Strategies.KISS_MODIFIED.getValue())
                 || gameParameters.getMoneyManagement().equals(Strategies.RGP.getValue())
                 || gameParameters.getMoneyManagement().equals(Strategies.HIGH.getValue())
-                || gameParameters.getMoneyManagement().equals(Strategies.ED.getValue())
-        ) {
+                || gameParameters.getMoneyManagement().equals(Strategies.ED.getValue())) {
             chunkSize = 10;
         }
 
