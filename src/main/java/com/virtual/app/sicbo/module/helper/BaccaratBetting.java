@@ -8,18 +8,6 @@ import java.util.List;
 
 public class BaccaratBetting {
 
-//    public static void main(String[] args) {
-//        // Define the sequence of wins (W) and losses (L)
-//        String sequence = "WWLLWLWLWLWWLLWWWWWW";
-//
-//        // Get the bet units for the last round
-//        int lastBetUnits = calculateLastBetUnit(sequence);
-//
-//        // Output the result (bet units for the last round)
-//        System.out.println("Bet " + lastBetUnits + " units for the last round");
-//    }
-
-
 
 
     public static int kissModifiedBetting(GameResultResponse gameResultResponse) {
@@ -32,9 +20,9 @@ public class BaccaratBetting {
             return 1;
         }
 
-        // 1-3-2-6 progression bets
+        // 1-2 progression bets
         int initialBet = 1;
-        int[] progression = {1, 2, 4};
+        int[] progression = {1, 2};
         int currentStage = 0;
         int currentBetUnit = initialBet;
 
