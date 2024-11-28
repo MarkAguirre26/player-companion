@@ -308,11 +308,11 @@
                         </button>
 
                         <button id="pauseButton" class="cursor-pointer" aria-label="Pause">
-                            <img id="pauseButtonImage" src="/img/play.png" class="w-6 h-6" alt="Pause">
+                            <img id="pauseButtonImage" src="/img/pause.png" class="w-6 h-6" alt="Pause">
                         </button>
 
                         <button id="playButton" class="cursor-pointer" aria-label="Pause">
-                            <img id="playButtonImage" src="/img/pause.png" class="w-6 h-6" alt="Pause">
+                            <img id="playButtonImage" src="/img/play.png" class="w-6 h-6" alt="Pause">
                         </button>
 
                     </div>
@@ -667,7 +667,7 @@
 
 
     <script>
-
+        let platform = null;
         let playedShoe = 0;
         let dateCreated;
         var freezeState = 'N';
@@ -754,7 +754,7 @@
 
                             // var pauseAndPlayValue = localStorage.getItem('pauseAndPlay'); // Corrected key
 
-                            if (!isPlayButtonHidden) {
+                            if (isPlayButtonHidden) {
 
                                 const dice = messgae.split(":");
                                 var dice_size = dice[1];
@@ -804,21 +804,42 @@
         }
 
 
+        async function getPlatform() {
+            try {
+                const response = await fetch('/api/game/platform', {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const r = await response.text(); // Assuming the response is a string
+
+                localStorage.setItem("platform", r);
+
+            } catch (error) {
+                alert('An error occurred: ' + error.message);
+            }
+        }
+
+
         $(document).ready(function () {
 
             // const smallButton = document.getElementById("smallButton");
             // const bigButton = document.getElementById("bigButton");
 
 
-            getPauseAndPlay();
-            getFreezeStateAsync();
-
             (async () => {
-
+                await getPlatform();
                 await getJournal('today');
                 await currentState();
 
+
             })();
+
+            getPauseAndPlay();
+            getFreezeStateAsync();
 
             // Get modal and buttons
             const modal = document.getElementById('yesNoModal');
@@ -832,17 +853,31 @@
 
             const backButton = document.getElementById('backButton');
 
+            platform = localStorage.getItem("platform");
+
+            console.log(platform);
 
             // Check the current page's URL
-            if (!window.location.href.toLowerCase().includes("sicbo")
-                && window.location.href.toLowerCase().includes("8081")) {
+            if (platform === "SicBo") {
+
+                var pauseAndPlayValue = localStorage.getItem('pauseAndPlay'); // Corrected key
+
+                if (pauseAndPlayValue === 'play') {
+                    pauseButton.style.display = 'block';
+                    playButton.style.display = 'none';
+                } else {
+                    pauseButton.style.display = 'none';
+                    playButton.style.display = 'block';
+                }
+
+                $("#buttons-collection").addClass("hidden");
+
+
+            } else {
+
                 pauseButton.style.display = 'none'; // This will hide the element
                 playButton.style.display = 'none';
                 $("#buttons-collection").removeClass("hidden");
-            } else {
-                // pauseButton.style.display = 'block'; // This will hide the element
-                // playButton.style.display = 'block';
-                $("#buttons-collection").addClass("hidden");
             }
 
 
@@ -858,6 +893,7 @@
 
             playButton.addEventListener('click', () => {
                 setPauseAndPlay('play');
+
 
             });
 
@@ -932,8 +968,8 @@
             getFreezeStateAsync();
 
 
-            if (window.location.href.toLowerCase().includes("sicbo")
-                || window.location.href.toLowerCase().includes("8079")) {
+            if (platform === "SicBo") {
+
                 connect();
             }
 
@@ -1337,23 +1373,20 @@
             //      processEventToReset('yes');
             //      setPauseAndPlay('pause');
             //  }
-            if (!window.location.href.toLowerCase().includes("sicbo")
-                && window.location.href.toLowerCase().includes("8081")) {
+            if (platform === "Baccarat") {
 
                 const spanElement = document.getElementById('nextbet-display');
                 const text = spanElement.textContent; // Get the text content of the span
                 spanElement.textContent = text.includes("Small") ? "Player" : text.includes("Big") ? "Banker" : text;
 
 
-
                 const handCount = $('#handCount');
                 const handCountText = handCount.text();
-                handCount.text(handCountText.replace("Rolls","Hands"))
+                handCount.text(handCountText.replace("Rolls", "Hands"))
 
                 const playedShoe = $('#playedShoe');
                 const playedShoeText = playedShoe.text();
-                playedShoe.text(playedShoeText.replace("Round","Shoe"))
-
+                playedShoe.text(playedShoeText.replace("Round", "Shoe"))
 
 
             }
@@ -1433,13 +1466,13 @@
 
             for (let i = 0; i < innerElements.length + 1; i++) {
 
-                if (!window.location.href.toLowerCase().includes("sicbo")
-                    && window.location.href.toLowerCase().includes("8081")) {
-                    innerElements.style.display = 'none'; // This will hide the element
+
+                // innerElements.style.display = 'none'; // This will hide the element
+
+
+                if (platform === "SicBo") {
+                    innerElements[i].textContent = diceSums[i + 1];
                 }
-
-
-                innerElements[i].textContent = diceSums[i + 1];
 
             }
 
@@ -1448,21 +1481,31 @@
 
         function getPauseAndPlay() {
 
-            const pauseButton = document.getElementById('pauseButton');
-            const playButton = document.getElementById('playButton');
+            if (platform === "SicBo") {
 
-            pauseButton.classList.add('hidden');
-            playButton.classList.add('hidden');
 
-            var pauseAndPlayValue = localStorage.getItem('pauseAndPlay'); // Corrected key
+                const pauseButton = document.getElementById('pauseButton');
+                const playButton = document.getElementById('playButton');
 
-            if (pauseAndPlayValue === 'play') {
-                pauseButton.classList.remove('hidden');
-            } else {
-                playButton.classList.remove('hidden');
+                // Ensure both elements exist
+                if (pauseButton && playButton) {
+
+                    var pauseAndPlayValue = localStorage.getItem('pauseAndPlay'); // Corrected key
+
+                    if (pauseAndPlayValue === 'play') {
+                        pauseButton.style.display = 'block';
+                        playButton.style.display = 'none';
+                    } else {
+                        pauseButton.style.display = 'none';
+                        playButton.style.display = 'block';
+                    }
+
+                    showorHideStrategiesDots();
+                } else {
+                    console.log('Pause or Play button not found.');
+                }
             }
 
-            showorHideStrategiesDots();
         }
 
 
@@ -1593,10 +1636,9 @@
                     const shoeHeading = document.createElement('h4');
                     shoeHeading.classList.add('font-semibold', 'text-sm');
 
-                    if (!window.location.href.toLowerCase().includes("sicbo")
-                        && window.location.href.toLowerCase().includes("8081")) {
+                    if (platform === "Baccarat") {
                         shoeHeading.textContent = `Shoe: ${journal.shoe}`;
-                    }else{
+                    } else {
                         shoeHeading.textContent = `Round: ${journal.shoe}`;
                     }
 
@@ -1616,17 +1658,15 @@
                     rightContainer.classList.add('flex-grow', 'text-right');
 
 
-                    if (!window.location.href.toLowerCase().includes("sicbo")
-                        && window.location.href.toLowerCase().includes("8081")) {
+                    if (platform === "Baccarat") {
                         rightContainer.innerHTML = `
                         <p>Hands: ${journal.hand}</p>
                         <p>Profit: ${journal.profit}</p>`;
-                    }else{
+                    } else {
                         rightContainer.innerHTML = `
                         <p>Rolls: ${journal.hand}</p>
                         <p>Profit: ${journal.profit}</p>`;
                     }
-
 
 
                     totalProfit += journal.profit;
@@ -1959,7 +1999,7 @@
                 // freezeState =  response;
                 // console.log(response);
                 // console.log(freezeState);
-
+              await  getPlatform();
 
                 if (response === 'OFF') {
 
@@ -1991,25 +2031,29 @@
 
 
         function showorHideStrategiesDots() {
+
             // const handCountValue = $("#handCount").text();
+            // if (isSicbo === true) {
 
-            var pauseAndPlayValue = localStorage.getItem('pauseAndPlay');
+            // var pauseAndPlayValue = localStorage.getItem('pauseAndPlay');
 
-            if (pauseAndPlayValue === 'play') {
-                $('#resetButton').show();
-                $('#threeDotsButton').show();
-            } else {
+            // console.log(pauseAndPlayValue);
 
+            $('#resetButton').show();
+            $('#threeDotsButton').show();
 
-                if (!window.location.href.toLowerCase().includes("sicbo")
-                    && window.location.href.toLowerCase().includes("8081")) {
-                    $('#threeDotsButton').show();
-                    $('#resetButton').show();
-                } else {
-                    $('#threeDotsButton').hide();
-                    $('#resetButton').hide();
-                }
-            }
+            // if (pauseAndPlayValue === 'play') {
+            //     $('#resetButton').show();
+            //     $('#threeDotsButton').show();
+            // } else {
+            //
+            //     $('#threeDotsButton').hide();
+            //     $('#resetButton').hide();
+            //
+            // }
+
+            // }
+
         }
 
 

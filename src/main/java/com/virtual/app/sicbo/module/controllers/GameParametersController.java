@@ -6,6 +6,7 @@ import com.virtual.app.sicbo.module.model.UserPrincipal;
 import com.virtual.app.sicbo.module.services.impl.GameParametersService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,11 @@ public class GameParametersController {
 
     private static final Logger logger = LoggerFactory.getLogger(GameParametersController.class);
     private final GameParametersService gameParametersService;
+
+
+    @Value("${game.sicbo}")
+    public String gameSicbo;
+
 
     public GameParametersController(GameParametersService gameParametersService) {
         this.gameParametersService = gameParametersService;
@@ -43,7 +49,14 @@ public class GameParametersController {
 
 
 
-
+    @GetMapping("/platform")
+    public String getPlatform() {
+        boolean isSicBoEnabled = Boolean.parseBoolean(gameSicbo);
+        if(isSicBoEnabled){
+            return "SicBo";
+        }
+        return "Baccarat";
+    }
 
 
     @PostMapping("/parameters")
