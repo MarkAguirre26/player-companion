@@ -95,8 +95,8 @@ public class BaccaratBetting {
     }
 
 
-    //    1, 2, 3
-    public static int kiss123(GameResultResponse gameResultResponse) {
+    //    1,3,5
+    public static int allRed(GameResultResponse gameResultResponse) {
 
         String handResult = gameResultResponse.getHandResult().replace("null", "");
         String skipSequence = gameResultResponse.getSkipState();
@@ -108,7 +108,7 @@ public class BaccaratBetting {
 
         // 1-3-2-6 progression bets
         int initialBet = 1;
-        int[] progression = {1, 2, 3};
+        int[] progression = {1, 3, 5};
         int currentStage = 0;
         int currentBetUnit = initialBet;
 

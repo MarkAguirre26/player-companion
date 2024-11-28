@@ -118,15 +118,8 @@ public class SicBoController {
 
         GameResultResponse gameResultResponse = updateSequenceAndUpdateHandCount(existingGame, diceSizeValue, userInputSmallOrBig);
 
-        GameParameters gameParameters = getGameParameters();
 
-        int chunkSize = 20;
-        if (gameParameters.getMoneyManagement().equals(Strategies.KISS_MODIFIED.getValue())
-                || gameParameters.getMoneyManagement().equals(Strategies.RGP.getValue())
-                || gameParameters.getMoneyManagement().equals(Strategies.HIGH.getValue())
-                || gameParameters.getMoneyManagement().equals(Strategies.ED.getValue())) {
-            chunkSize = 10;
-        }
+        int chunkSize = 10;
 
         // Generate predictions using Markov chain and pattern recognition
         String sequence = gameResultResponse.getSequence();
@@ -324,8 +317,8 @@ public class SicBoController {
                     betSize = BaccaratBetting.rLiza(gameResultResponse);
                 } else if (currentStrategy.equals(Strategies.ED.getValue())) {
                     betSize = BaccaratBetting.ed(gameResultResponse);
-                } else if (currentStrategy.equals(Strategies.KISS_123.getValue())) {
-                    betSize = BaccaratBetting.kiss123(gameResultResponse);
+                } else if (currentStrategy.equals(Strategies.ALL_RED.getValue())) {
+                    betSize = BaccaratBetting.allRed(gameResultResponse);
                 } else if (currentStrategy.equals(Strategies.RGP.getValue())) {
                     betSize = BaccaratBetting.rgp(gameResultResponse);
                 } else if (currentStrategy.equals(Strategies.HIGH.getValue())) {

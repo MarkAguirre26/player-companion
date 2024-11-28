@@ -141,7 +141,7 @@
 			</plugin>
 
 		</plugins>
-		<finalName>PlayerCompanion-Sicbo</finalName>
+		<finalName>PlayerCompanion</finalName>
 	</build>
 
 

@@ -12,6 +12,7 @@ public enum Strategies {
     FREEHAND("FREEHAND"),
     STOCHASTIC("STOCHASTIC"),
     KISS_123("KISS_123"),
+    ALL_RED("ALL_RED"),
     KISS_MODIFIED("KISS_MODIFIED"),
     FLAT("FLAT"),
     HIGH("HIGH"),
