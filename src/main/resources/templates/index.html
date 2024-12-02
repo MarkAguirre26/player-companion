@@ -1814,6 +1814,9 @@
                 let handResult = response.handResult;
                 let skipState = response.skipState;
 
+
+
+
                 const handResultContainer = document.getElementById('handResultContainer');
                 handResultContainer.innerHTML = "";
 
@@ -1825,23 +1828,31 @@
                 const fragment = document.createDocumentFragment();
 
 
-                handResult.replace(/[^WL]/g, '').split('').forEach((result, index) => {
+                handResult.replace(/[^WL*]/g, '').split('').forEach((result, index) => {
                     const circle = document.createElement('div');
                     const isWin = result === 'W';
                     const isLoss = result === 'L';
+                    const isStar = result === '*';
+
+                    // console.log(result);
+
                     const isShouldSkip = skipState[index] === 'Y';
 
 
                     circle.className = `flex items-center justify-center w-5 h-5 rounded-full text-white text-xs ${isWin ? 'bg-green-500' : isLoss ? 'bg-red-500' : 'bg-yellow-500'}`;
 
+ if(isStar){
+     circle.classList.add(isShouldSkip ? 'text-yellow-600' : 'text-white');
+ }else{
+     circle.classList.add(isShouldSkip ? 'text-yellow-500' : 'text-white');
+ }
 
-                    circle.classList.add(isShouldSkip ? 'text-yellow-500' : 'text-white');
                     if (isShouldSkip) {
                         circle.classList.add('font-bold');  // Apply bold text if skipState is true
                     }
 
                     // Set the inner text
-                    circle.innerText = isWin ? 'W' : isLoss ? 'L' : 'S';
+                    circle.innerText = isWin ? 'W' : isLoss ? 'L' : isStar? '*' : '-';
 
                     fragment.appendChild(circle);
                 });

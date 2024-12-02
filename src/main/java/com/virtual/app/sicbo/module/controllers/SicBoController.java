@@ -9,6 +9,7 @@ import com.virtual.app.sicbo.module.data.response.GameResultStatus;
 import com.virtual.app.sicbo.module.helper.BaccaratBetting;
 import com.virtual.app.sicbo.module.helper.TriggerFinder;
 import com.virtual.app.sicbo.module.model.Pair;
+import com.virtual.app.sicbo.module.model.PairPattern;
 import com.virtual.app.sicbo.module.model.UserPrincipal;
 import com.virtual.app.sicbo.module.services.TrailingStopService;
 import com.virtual.app.sicbo.module.services.impl.*;
@@ -43,7 +44,7 @@ public class SicBoController {
 
     private static final Logger logger = LoggerFactory.getLogger(SicBoController.class);
 
-
+    private final EdmelBaccarat edmelBaccarat;
     private final MarkovChain markovChain;
     private final JournalServiceImpl journalService;
     private final GameStatusService gameStatusService;
@@ -58,14 +59,16 @@ public class SicBoController {
     private final String WAIT = "Wait..";
     private final String SMALL = "Small";
     private final String BIG = "Big";
+    private final String NO_BET = "NO_BET";
 
 
     @Autowired
-    public SicBoController(MarkovChain markovChain, JournalServiceImpl journalService,
+    public SicBoController(EdmelBaccarat edmelBaccarat, MarkovChain markovChain, JournalServiceImpl journalService,
                            GameStatusService gameStatusService, GameResponseService gameResponseService,
                            TrailingStopService trailingStopService, GamesArchiveService gamesArchiveService,
                            UserConfigService configService, WebSocketMessageService messageService,
                            GameParametersService gameParametersService) {
+        this.edmelBaccarat = edmelBaccarat;
         this.markovChain = markovChain;
 
         this.journalService = journalService;
@@ -123,13 +126,31 @@ public class SicBoController {
 
         // Generate predictions using Markov chain and pattern recognition
         String sequence = gameResultResponse.getSequence();
-        Optional<Pair<Character, Double>> markovPrediction = markovChain.predictNext(sequence, chunkSize);
+        Optional<PairPattern<Character, Double, String>> nextPredictionTemp = Optional.empty();
+
+        if (sequence.length() >= 3) {
+            nextPredictionTemp = edmelBaccarat.predict(sequence);
+        }
+//        Optional<Pair<Character, Double>> markovPrediction = markovChain.predictNext(sequence, chunkSize);
+//        Optional<Pair<Character, Double>> nextPrediction = edmelBaccarat.predict(sequence);
 
         // Combine predictions and handle the bet
-        Pair<Character, Double> combinedPrediction = combinePredictions(markovPrediction);
 
 
-        return handleBet(gameResultResponse, diceSizeValue, combinedPrediction, predictedBet, suggestedUnit);
+//        System.out.println("Prediction: " + nextPredictionTemp.first);
+//        gameResultResponse.setMessage(PLACE_YOUR_BET);
+        Pair<Character, Double> prediction = new Pair<>('-', 0.0);
+        if (nextPredictionTemp.isPresent()) {
+            String msg = nextPredictionTemp.get().third;
+            gameResultResponse.setMessage(msg);
+            prediction = new Pair<>(nextPredictionTemp.get().first, nextPredictionTemp.get().second);
+        }
+
+
+//        Pair<Character, Double> combinedPrediction = combinePredictions(prediction);
+
+
+        return handleBet(gameResultResponse, diceSizeValue, prediction, predictedBet, suggestedUnit);
 //    return  validateGameResult(suggestedUnit, betSize, predictedBet, userInput, gameResultResponse, recommendedBet, skipState);
     }
 
@@ -248,8 +269,9 @@ public class SicBoController {
         int sensitivity = gameParameters.getSensitivity() == null ? 55 : gameParameters.getSensitivity();
         double CONFIDENCE_THRESHOLD = (double) sensitivity / 100;
 
+        double confidence = combinedPrediction.second * 100;
+        if (confidence < CONFIDENCE_THRESHOLD) {
 
-        if (combinedPrediction.second < CONFIDENCE_THRESHOLD) {
 
             gameResultResponse.setMessage(PREDICTION_CONFIDENCE_LOW);
 
@@ -259,9 +281,9 @@ public class SicBoController {
 
         }
         prediction = String.valueOf(combinedPrediction.first);
-        recommendedBet = Objects.equals(prediction, "s") ? SMALL : BIG;
+        recommendedBet = Objects.equals(prediction, "s") ? SMALL : Objects.equals(prediction, "b") ? BIG : "-";
 
-        gameResultResponse.setConfidence(combinedPrediction.second);
+        gameResultResponse.setConfidence(confidence);
 
 
         return validateGameResult(suggestedUnit, predictedBet, diceSizeValue, gameResultResponse, recommendedBet);
@@ -439,7 +461,9 @@ public class SicBoController {
 
 
                         gameResultResponse.setHandResult(gameResultResponse.getHandResult() + "W");
+
                         gameResultResponse.setMessage(PLACE_YOUR_BET);
+
                         gameResultResponse.setLossCounter(0);
                         gameResultResponse.setSuggestedBetUnit(betSize);
 
@@ -470,6 +494,7 @@ public class SicBoController {
                 if (gameResultResponse.getMessage().equals(PREDICTION_CONFIDENCE_LOW) &&
                         gameResultResponse.getConfidence() >= CONFIDENCE_THRESHOLD
                 ) {
+
                     gameResultResponse.setMessage(PLACE_YOUR_BET);
                 }
             }
@@ -494,6 +519,19 @@ public class SicBoController {
                 gameResultResponse.setSkipState(modifiedStr + "Y");
             }
 
+
+//            System.out.println("SequenceHere:"+gameResultResponse.getSequence());
+
+            if (gameResultResponse.getSequence().length() < 4 || !gameResultResponse.getMessage().equals(PLACE_YOUR_BET)) {
+
+                String skipStateSequence = gameResultResponse.getSkipState();
+                String modifiedStr = skipStateSequence.substring(0, skipStateSequence.length() - 1);
+                gameResultResponse.setSkipState(modifiedStr + "Y");
+                gameResultResponse.setSuggestedBetUnit(0);
+            }
+
+
+            System.out.println("Message:" + gameResultResponse.getMessage());
 
             return provideGameResponse(gameResultResponse);
         }
@@ -613,7 +651,7 @@ public class SicBoController {
         int totalLosses = gameResultResponse.getGameStatus().getLosses();
         int currentLossCount = gameResultResponse.getLossCounter();
 
-        String previousPrediction = predictedBet.equals(SMALL) ? "s" : predictedBet.equals(BIG) ? "b" : "t";
+        String previousPrediction = predictedBet.equals(SMALL) ? "s" : predictedBet.equals(BIG) ? "b" : "-";
 
         String sequence = gameResultResponse.getSequence();
 
@@ -630,6 +668,8 @@ public class SicBoController {
 
             currentLossCount = 0;
             gameResultResponse.setHandResult(gameResultResponse.getHandResult() + "W");
+
+
             gameResultResponse.setMessage(PLACE_YOUR_BET);
 
 
@@ -647,8 +687,15 @@ public class SicBoController {
                 playingUnit -= suggestedUnit;
                 totalLosses++;
 
+                if(previousPrediction.equals("-")){
+                    gameResultResponse.setHandResult(gameResultResponse.getHandResult() + "*");
+                }else {
+                    gameResultResponse.setHandResult(gameResultResponse.getHandResult() + "L");
+                }
 
-                gameResultResponse.setHandResult(gameResultResponse.getHandResult() + "L");
+                System.out.println("diceSizeValue:"+diceSizeValue);
+                System.out.println("previousPrediction:"+previousPrediction);
+
             }
         }
 
@@ -899,14 +946,11 @@ public class SicBoController {
     }
 
 
-    private Pair<Character, Double> combinePredictions(Optional<Pair<Character, Double>> markovResult) {
-
-        // Handle both results being absent
-        if (markovResult.isEmpty()) {
-            return new Pair<>(null, 0.0);
-        }
-        return markovResult.get();
-    }
+//    private Pair<Character, Double> combinePredictions(Optional<Pair<Character, Double>> markovResult) {
+//
+//        // Handle both results being absent
+//        return markovResult.orElseGet(() -> new Pair<>(null, 0.0));
+//    }
 
 
     private GameResultResponse getGameResponse(UserPrincipal userPrincipal) {
