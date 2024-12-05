@@ -63,6 +63,58 @@ public class MarkovChain {
                 .max(Comparator.comparingDouble(pair -> pair.first));
     }
 
+
+    public  String patternRecognizer(String inputSequence ) {
+
+        int windowSize = 3;
+
+        List<String> outcomes = new ArrayList<>();
+
+        // Convert the input string into a list of outcomes
+        for (char c : inputSequence.toCharArray()) {
+            if (c == 's' || c == 'b') {
+                outcomes.add(String.valueOf(c));
+            }
+        }
+
+        if (outcomes.size() < windowSize) {
+            windowSize = outcomes.size();  // Adjust window size if outcomes are fewer
+        }
+
+
+
+        List<String> recent = outcomes.subList(outcomes.size() - windowSize, outcomes.size());
+
+        // Predict based on streak
+        if (new HashSet<>(recent).size() == 1) {
+            return recent.get(0);  // Continue the streak
+        }
+
+        // Predict based on swaps
+        boolean isSwap = true;
+        for (int i = 0; i < recent.size() - 1; i++) {
+            if (recent.get(i).equals(recent.get(i + 1))) {
+                isSwap = false;
+                break;
+            }
+        }
+        if (isSwap) {
+            return recent.get(recent.size() - 1).equals("b") ? "s" : "b";  // Alternate
+        }
+
+        // Predict based on frequency
+        Map<String, Long> counts = new HashMap<>();
+        for (String outcome : outcomes) {
+            counts.put(outcome, counts.getOrDefault(outcome, 0L) + 1);
+        }
+        return counts.entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .get().getKey();  // Most frequent outcome
+    }
+
+
+
+
     /**
      * Returns the last x characters from the sequence for prediction, or the entire sequence if shorter.
      */

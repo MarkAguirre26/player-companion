@@ -96,6 +96,7 @@ public class GameParametersController {
             newUserParams.setTrailingStopSpread(0);
             newUserParams.setTrailingStopActivation(0);
             newUserParams.setMoneyManagement(Strategies.FLAT.getValue());
+            newUserParams.setMoneyManagement("OPEN_AI");
             newUserParams.setIsShield(0);
             newUserParams.setIsCompounding(0);
             newUserParams.setStopTrigger(0);

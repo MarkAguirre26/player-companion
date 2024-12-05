@@ -9,7 +9,6 @@ import java.util.List;
 public class BaccaratBetting {
 
 
-
     public static int kissModifiedBetting(GameResultResponse gameResultResponse) {
 
         String handResult = gameResultResponse.getHandResult().replace("null", "");
@@ -59,41 +58,6 @@ public class BaccaratBetting {
     }
 
 
-    //    -1, +2
-    public static int ed(GameResultResponse gameResultResponse) {
-
-        String handResult = gameResultResponse.getHandResult().replace("null", "");
-        String skipSequence = gameResultResponse.getSkipState();
-
-        // Ensure both sequences have the same length to avoid errors
-        if (handResult.isEmpty()) {
-            return 1;
-        }
-
-        // 1-3-2-6 progression bets
-        int bet = 1;
-        // Iterate through the results and skip states
-        for (int i = 0; i < handResult.length(); i++) {
-            char outcome = handResult.charAt(i);
-            char skipOutcome = skipSequence.charAt(i);
-
-            // Only proceed if not skipped
-            if (skipOutcome == 'N') {
-                if (outcome == 'W') {
-                    if (bet >= 3) {
-                        bet -= 2;
-                    }
-
-
-                } else if (outcome == 'L') {
-                    bet++;
-                }
-            }
-        }
-
-        return bet <= 0 ? 1 : bet;
-    }
-
 
     //    1,3,5
     public static int allRed(GameResultResponse gameResultResponse) {
@@ -142,7 +106,7 @@ public class BaccaratBetting {
         return currentBetUnit;  // Return the last progression value used
     }
 
-    //1,1,1,1,2,2,4,4,8,8
+    //1,2
     public static int rgp(GameResultResponse gameResultResponse) {
 
         String handResult = gameResultResponse.getHandResult().replace("null", "");
@@ -153,9 +117,9 @@ public class BaccaratBetting {
             return 1;
         }
 
-        //Repeated Geometric Progression (RGP)
+
         int initialBet = 1;
-        int[] progression = {1, 1, 1, 1, 2, 2, 4, 4, 8, 8}; // 10th levels
+        int[] progression = {1, 2}; // 10th levels
         int currentStage = 0;
         int currentBetUnit = initialBet;
 
@@ -166,23 +130,15 @@ public class BaccaratBetting {
 
             // Only proceed if not skipped
             if (skipOutcome == 'N') {
-                if (outcome == 'W') {
 
-                    currentBetUnit = initialBet;
-                    // Reset the progression after a loss
+                // Move to the next stage in the progression
+                currentStage++;
+                if (currentStage == progression.length) {
+                    // Reset progression if the 6-unit stage is reached
                     currentStage = 0;
-
-
-                } else if (outcome == 'L') {
-
-                    // Move to the next stage in the progression
-                    currentStage++;
-                    if (currentStage == progression.length) {
-                        // Reset progression if the 6-unit stage is reached
-                        currentStage = 0;
-                    }
-                    currentBetUnit = progression[currentStage] * initialBet;
                 }
+                currentBetUnit = progression[currentStage] * initialBet;
+
             }
         }
 
@@ -190,7 +146,9 @@ public class BaccaratBetting {
     }
 
 
-    public static int targetThree(GameResultResponse gameResultResponse) {
+
+//1,2,4,3,6,9
+    public static int hybrid(GameResultResponse gameResultResponse) {
 
         String handResult = gameResultResponse.getHandResult().replace("null", "");
         String skipSequence = gameResultResponse.getSkipState();
@@ -202,7 +160,7 @@ public class BaccaratBetting {
 
         //Repeated Geometric Progression (RGP)
         int initialBet = 1;
-        int[] progression = {1, 1, 1, 1, 2, 2,2, 4, 4, 8, 8}; // 10th levels
+        int[] progression = {1,2,4,3,6,9}; // 10th levels
         int currentStage = 0;
         int currentBetUnit = initialBet;
 

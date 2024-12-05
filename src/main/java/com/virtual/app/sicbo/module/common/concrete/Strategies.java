@@ -17,7 +17,7 @@ public enum Strategies {
     FLAT("FLAT"),
     HIGH("HIGH"),
     DUMMY("DUMMY"),
-    ED("ED"),
+    hybrid("hybrid"),
     RGP("RGP"),
     REVERSE_LABOUCHERE("REVERSE_LABOUCHERE"),
     STRATEGY("STRATEGY");

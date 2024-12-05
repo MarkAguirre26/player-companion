@@ -36,6 +36,9 @@ public class GameParameters {
     @Column(name = "money_management", length = 254)
     private String moneyManagement;
 
+    @Column(name = "strategy", length = 100)
+    private String strategy;
+
     @Column(name = "is_shield")
     private Integer isShield;
 

@@ -100,6 +100,10 @@ public class SicBoController {
         return processGame(userInput, recommendedBet, suggestedUnit);
     }
 
+    public static boolean isEven(int number) {
+        return number % 2 == 0;
+    }
+
     public GameResultResponse processGame(String userInput, String predictedBet, int suggestedUnit) {
 
 
@@ -126,24 +130,43 @@ public class SicBoController {
 
         // Generate predictions using Markov chain and pattern recognition
         String sequence = gameResultResponse.getSequence();
-        Optional<PairPattern<Character, Double, String>> nextPredictionTemp = Optional.empty();
+
+        Optional<PairPattern<Character, Double, String>> nextPredictionTemp;
+        Optional<Pair<Character, Double>> markovPrediction;
+        Pair<Character, Double> prediction = new Pair<>('-', 0.0);
 
         if (sequence.length() >= 3) {
-            nextPredictionTemp = edmelBaccarat.predict(sequence);
-        }
-//        Optional<Pair<Character, Double>> markovPrediction = markovChain.predictNext(sequence, chunkSize);
-//        Optional<Pair<Character, Double>> nextPrediction = edmelBaccarat.predict(sequence);
+            String handResult = gameResultResponse.getHandResult();
+            char lastChar = 'W';
+            if (handResult != null && handResult.length() >= 2) {
+                handResult.charAt(handResult.length() - 1);
+            }
 
-        // Combine predictions and handle the bet
+
+            if (getGameParameters().getStrategy().equals("PATTERN")) {
+                System.out.println("BRAIN: PATTERN");
+                nextPredictionTemp = edmelBaccarat.predict(sequence);
+                if (nextPredictionTemp.isPresent()) {
+                    String msg = nextPredictionTemp.get().third;
+                    gameResultResponse.setMessage(msg);
+                    prediction = new Pair<>(nextPredictionTemp.get().first, nextPredictionTemp.get().second);
+                }
+            } else if (getGameParameters().getStrategy().equals("RECOGNIZER")) {
+                System.out.println("BRAIN: RECOGNIZER");
+                String patternRecognizerPrediction = markovChain.patternRecognizer(sequence);
+                char p = patternRecognizerPrediction.charAt(0);
+                prediction = new Pair<>(p, 1.0);
+            } else {
+                System.out.println("BRAIN: OPEN AI");
+                markovPrediction = markovChain.predictNext(sequence, chunkSize);
+                if (markovPrediction.isPresent()) {
+                    gameResultResponse.setMessage(PLACE_YOUR_BET);
+                    prediction = new Pair<>(markovPrediction.get().first, markovPrediction.get().second);
+                }
 
 
-//        System.out.println("Prediction: " + nextPredictionTemp.first);
-//        gameResultResponse.setMessage(PLACE_YOUR_BET);
-        Pair<Character, Double> prediction = new Pair<>('-', 0.0);
-        if (nextPredictionTemp.isPresent()) {
-            String msg = nextPredictionTemp.get().third;
-            gameResultResponse.setMessage(msg);
-            prediction = new Pair<>(nextPredictionTemp.get().first, nextPredictionTemp.get().second);
+            }
+
         }
 
 
@@ -337,8 +360,8 @@ public class SicBoController {
                 } else if (currentStrategy.equals(Strategies.RLIZA.getValue())) {
 
                     betSize = BaccaratBetting.rLiza(gameResultResponse);
-                } else if (currentStrategy.equals(Strategies.ED.getValue())) {
-                    betSize = BaccaratBetting.ed(gameResultResponse);
+                } else if (currentStrategy.equals(Strategies.hybrid.getValue())) {
+                    betSize = BaccaratBetting.hybrid(gameResultResponse);
                 } else if (currentStrategy.equals(Strategies.ALL_RED.getValue())) {
                     betSize = BaccaratBetting.allRed(gameResultResponse);
                 } else if (currentStrategy.equals(Strategies.RGP.getValue())) {
@@ -431,13 +454,13 @@ public class SicBoController {
 
                             String virtualWinKey = "W".repeat(virtualWin);
 
-                            boolean isGoodToBet = TriggerFinder.isGoodToBet(gameResultResponse.getHandResult(), virtualWinKey);
+                            boolean isGoodToBet = TriggerFinder.isGoodToBet(gameResultResponse.getHandResult().replace("*", ""), virtualWinKey);
                             if (isGoodToBet && gameResultResponse.getSequence().length() > 1) {
                                 saveFreezeState(OFF);
                             } else {
 //                                saveFreezeState(ON);// to do
                                 String stopTriggerKey = "L".repeat(stopTrigger);
-                                String stopTriggerKeyValue = TriggerFinder.getLastPart(gameResultResponse.getHandResult(), stopTriggerKey);
+                                String stopTriggerKeyValue = TriggerFinder.getLastPart(gameResultResponse.getHandResult().replace("*", ""), stopTriggerKey);
                                 if (stopTriggerKey.equals(stopTriggerKeyValue)) {
                                     saveFreezeState(ON);
                                 } else {
@@ -521,15 +544,15 @@ public class SicBoController {
 
 
 //            System.out.println("SequenceHere:"+gameResultResponse.getSequence());
+            if (getGameParameters().getStrategy().equals("PATTERN") || getGameParameters().getStrategy().equals("RECOGNIZER")) {
+                if (gameResultResponse.getSequence().length() < 4 || !gameResultResponse.getMessage().equals(PLACE_YOUR_BET)) {
 
-            if (gameResultResponse.getSequence().length() < 4 || !gameResultResponse.getMessage().equals(PLACE_YOUR_BET)) {
-
-                String skipStateSequence = gameResultResponse.getSkipState();
-                String modifiedStr = skipStateSequence.substring(0, skipStateSequence.length() - 1);
-                gameResultResponse.setSkipState(modifiedStr + "Y");
-                gameResultResponse.setSuggestedBetUnit(0);
+                    String skipStateSequence = gameResultResponse.getSkipState();
+                    String modifiedStr = skipStateSequence.substring(0, skipStateSequence.length() - 1);
+                    gameResultResponse.setSkipState(modifiedStr + "Y");
+                    gameResultResponse.setSuggestedBetUnit(0);
+                }
             }
-
 
             System.out.println("Message:" + gameResultResponse.getMessage());
 
@@ -677,24 +700,26 @@ public class SicBoController {
             if (!gameResultResponse.getSequence().contains("1111")) {
 
 
-                if (gameParameters.getStopTrigger() > 0) {
-                    currentLossCount++;
-                }
-
                 profit = (isFrozen() ? profit : profit - suggestedUnit);
 
 
-                playingUnit -= suggestedUnit;
-                totalLosses++;
-
-                if(previousPrediction.equals("-")){
+                if (previousPrediction.equals("-")) {
                     gameResultResponse.setHandResult(gameResultResponse.getHandResult() + "*");
-                }else {
+                } else {
+
+                    if (gameParameters.getStopTrigger() > 0) {
+
+                        currentLossCount++;
+                    }
+
+                    playingUnit -= suggestedUnit;
+                    totalLosses++;
+
                     gameResultResponse.setHandResult(gameResultResponse.getHandResult() + "L");
                 }
 
-                System.out.println("diceSizeValue:"+diceSizeValue);
-                System.out.println("previousPrediction:"+previousPrediction);
+                System.out.println("diceSizeValue:" + diceSizeValue);
+                System.out.println("previousPrediction:" + previousPrediction);
 
             }
         }
