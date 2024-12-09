@@ -575,17 +575,21 @@ async function displayResultToUi(response) {
     const statusMessage = response.message;
     // const tempMessage = (statusMessage.includes('Wait') && statusMessage.includes('Wait for virtual win')) ? "" : statusMessage;
 
-    const isRecognizerChecked = document.getElementById('recognizer').checked
 
+    // if (!$("#smallButton").is(":visible")) {
 
-    if (isRecognizerChecked) {
-        const reverseBetCheckBox = $('#reverseBet');
-        if (losses > wins) {
-            reverseBetCheckBox.prop('checked', true);
-        } else {
-            reverseBetCheckBox.prop('checked', false);
-        }
-    }
+        // const isRecognizerChecked = document.getElementById('recognizer').checked
+        //
+        // if (isRecognizerChecked) {
+        //     const reverseBetCheckBox = $('#reverseBet');
+        //     if (losses > wins) {
+        //         reverseBetCheckBox.prop('checked', true);
+        //     } else {
+        //         reverseBetCheckBox.prop('checked', false);
+        //     }
+        // }
+
+    // }
 
 
     const statusElement = $('#status');
@@ -767,7 +771,7 @@ async function displayResultToUi(response) {
 
         const spanElement = document.getElementById('nextbet-display');
         const text = spanElement.textContent; // Get the text content of the span
-        spanElement.textContent = text.includes("Small") ? "Player" : text.includes("Big") ? "Banker" : text;
+        spanElement.textContent = text.includes("Small") ? "Player" : text.includes("Big") ? "Banker" : "-";
 
 
         const handCount = $('#handCount');

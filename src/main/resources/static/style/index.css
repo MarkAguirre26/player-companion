@@ -1,0 +1,192 @@
+.notification {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(63, 55, 55, 0.726);
+    /* Slightly transparent */
+    color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 16px;
+    display: none;
+    /* Initially hidden */
+    z-index: 1000;
+    /* Ensure it appears on top */
+}
+
+/* Hide scrollbars but still allow scrolling */
+.hidden-scrollbar {
+    scrollbar-width: none;
+    /* For Firefox */
+    -ms-overflow-style: none;
+    /* For Internet Explorer and Edge */
+}
+
+.hidden-scrollbar::-webkit-scrollbar {
+    display: none;
+    /* For Chrome, Safari, and Opera */
+}
+
+.glow {
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    /* Gold glow */
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+/* The overlay that covers the whole screen */
+.overlay {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0);
+    /* Semi-transparent background */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* The smaller spinner */
+.spinner {
+    width: 30px;
+    height: 30px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+
+.light-separator {
+    border-color: rgba(229, 231, 235, 0.5);
+    /* Lighter gray with 50% opacity */
+}
+
+#spinnerOverlay {
+    display: none;
+    /* Hidden by default */
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255, 255, 255, 0);
+    /* Optional: semi-transparent background */
+}
+
+
+/* Spinner animation */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#handResultContainer {
+    display: flex;
+    overflow-x: auto;
+    /* Enable horizontal scrolling */
+    white-space: nowrap;
+    /* Prevent circles from wrapping */
+    scrollbar-width: none;
+    /* Firefox: Hide scrollbar */
+
+}
+
+#handResultContainer div {
+    flex-shrink: 0;
+    /* Prevent the circles from shrinking */
+}
+
+#handResultContainer div {
+    flex-shrink: 0;
+    /* Prevent the circles from shrinking */
+    margin: 1px;
+    /* Added 1px margin around each circle */
+}
+
+#gameForm {
+    position: relative;
+    /* Necessary for the absolute positioning of the pseudo-element */
+    z-index: 1;
+    /* Ensure content is above the background */
+}
+
+#gameForm::before {
+    content: "";
+    background-image: url('/img/box_grid.jpg');
+    background-repeat: repeat;
+    /* Makes the background image repeat */
+    background-size: 24px;
+    /* Size of the background image */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.1;
+    /* Adjust opacity here (0.0 to 1.0) */
+    z-index: -1;
+    /* Ensures it is behind the content */
+}
+
+
+.toggle-input:checked + .toggle-slider {
+    background-color: #4a90e2;
+    /* Track color when checked */
+}
+
+.toggle-input:checked + .toggle-slider:before {
+    transform: translateX(20px);
+    /* Knob position when checked */
+}
+
+/* ------------------PRGRESS BAR-------------------------------- */
+.progress-container {
+    width: 100%;
+    background-color: #e0e0df;
+    border-radius: 25px;
+    padding: 1px;
+}
+
+.progress-bar {
+    height: 2px;
+    /* Smaller height */
+    width: 100% !important;
+    background-color: green;
+    border-radius: 25px;
+    transition: width 0.5s ease;
+}
+
+/* Color based on percentage */
+.low {
+    background-color: red;
+}
+
+.medium {
+    background-color: orange;
+}
+
+.high {
+    background-color: green;
+}
+
+
+
+.online-user {
+    margin-top: 10px;
+    /* position: absolute; */
+    top: 0;
+    right: 0;
+    /* background-color: #0dbb35; */
+    color: #6b7280;
+    border-radius: 50%;
+    padding: 2px 5px;
+    font-size: 11px;
+    font-weight: normal;
+    transform: translate(50%, -50%);
+}

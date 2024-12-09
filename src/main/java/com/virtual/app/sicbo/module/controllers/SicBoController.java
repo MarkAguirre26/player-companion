@@ -361,7 +361,15 @@ public class SicBoController {
 
                     betSize = BaccaratBetting.rLiza(gameResultResponse);
                 } else if (currentStrategy.equals(Strategies.hybrid.getValue())) {
+
                     betSize = BaccaratBetting.hybrid(gameResultResponse);
+
+                    int currentProfit = gameResultResponse.getGameStatus().getProfit();
+
+                    if (currentProfit == -3) {
+                        betSize = 2;
+                    }
+
                 } else if (currentStrategy.equals(Strategies.ALL_RED.getValue())) {
                     betSize = BaccaratBetting.allRed(gameResultResponse);
                 } else if (currentStrategy.equals(Strategies.RGP.getValue())) {
@@ -544,7 +552,7 @@ public class SicBoController {
 
 
 //            System.out.println("SequenceHere:"+gameResultResponse.getSequence());
-            if (getGameParameters().getStrategy().equals("PATTERN") || getGameParameters().getStrategy().equals("RECOGNIZER")) {
+            if (getGameParameters().getStrategy().equals("PATTERN")) {
                 if (gameResultResponse.getSequence().length() < 4 || !gameResultResponse.getMessage().equals(PLACE_YOUR_BET)) {
 
                     String skipStateSequence = gameResultResponse.getSkipState();
