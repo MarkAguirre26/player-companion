@@ -14,7 +14,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
-    <link rel="stylesheet" type="text/css" href="/style/index.css">
+<link rel="stylesheet" type="text/css" href="/style/index.css">
 
 <body class="bg-gray-100">
 <div class="container mx-auto p-2 relative">
@@ -278,7 +278,7 @@
 
                 <!-- Trailing Stop Spread -->
                 <label for="trailingStopSpread" class="text-sm text-left">Trailing Stop</label>
-                <div class="grid grid-cols-2 gap-2 mt-2" style="margin-left: 0px; margin-top: -5px;">
+                <div class="grid grid-cols-2 gap-2 mt-2" style="margin-left: 0; margin-top: -5px;">
                     <div class="flex flex-col">
                         <label for="trailingStopActivation" class="text-xs">Trigger:</label>
                         <input type="number" id="trailingStopActivation" class="p-1 border rounded text-sm w-full"
@@ -307,7 +307,7 @@
 
                 <!-- Shield Section aligned under Money Management -->
                 <label class="text-sm text-left">Shield</label>
-                <div class="grid grid-cols-2 gap-2 mt-2" style="margin-left: 0px; margin-top: -5px;">
+                <div class="grid grid-cols-2 gap-2 mt-2" style="margin-left: 0; margin-top: -5px;">
                     <div class="flex flex-col">
                         <label for="stopTrigger" class="text-xs">Trigger:</label>
                         <input type="number" id="stopTrigger" class="p-1 border rounded text-sm w-full"
@@ -336,7 +336,7 @@
 
 
                 <label class="text-sm text-left">Daily Goal</label>
-                <div class="grid grid-cols-2 gap-2 mt-2" style="margin-left: 0px; margin-top: -5px;">
+                <div class="grid grid-cols-2 gap-2 mt-2" style="margin-left: 0; margin-top: -5px;">
                     <div class="flex flex-col">
                         <label for="dailyGoalPercentage" class="text-xs">%</label>
                         <input type="number" id="dailyGoalPercentage" class="p-1 border rounded text-sm w-full"
@@ -431,14 +431,12 @@
     </div>
 
 
-    <!-- Strategies dialog-->
-
     <div class="notification" id="notification">
         <span id="message"></span>
     </div>
 
     <script src="/scripts/main.js"></script>
-
+</div>
 </body>
 
 </html>
