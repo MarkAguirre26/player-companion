@@ -366,7 +366,7 @@ public class SicBoController {
 
                     int currentProfit = gameResultResponse.getGameStatus().getProfit();
 
-                    if (currentProfit == -3) {
+                    if (currentProfit == -1 || currentProfit == -3) {
                         betSize = 2;
                     }
 
@@ -560,6 +560,10 @@ public class SicBoController {
                     gameResultResponse.setSkipState(modifiedStr + "Y");
                     gameResultResponse.setSuggestedBetUnit(0);
                 }
+            }
+
+            if(gameResultResponse.getRecommendedBet().equals("-")){
+                gameResultResponse.setSuggestedBetUnit(0);
             }
 
             System.out.println("Message:" + gameResultResponse.getMessage());
