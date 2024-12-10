@@ -351,6 +351,27 @@ $(document).ready(function () {
     setHideHandResult();
 
 
+    $("input[name='strategy']").change(function () {
+        // Get the ID of the selected radio button
+        const selectedStrategy = $("input[name='strategy']:checked").attr("id");
+        // Perform actions based on the selected option
+        if (selectedStrategy === "openAi") {
+            $("#SensitivityValue, #Sensitivity").show();
+        } else if (selectedStrategy === "patternAdaptive" || selectedStrategy === "recognizer") {
+            $("#SensitivityValue, #Sensitivity").hide();
+        }
+    });
+
+
+    const isCheckedOpenAi = document.getElementById('openAi').checked
+       if(isCheckedOpenAi){
+           $("#SensitivityValue, #Sensitivity").show();
+       }else{
+           $("#SensitivityValue, #Sensitivity").hide();
+       }
+
+
+
 });
 
 function setHideHandResult() {
@@ -578,16 +599,16 @@ async function displayResultToUi(response) {
 
     // if (!$("#smallButton").is(":visible")) {
 
-        // const isRecognizerChecked = document.getElementById('recognizer').checked
-        //
-        // if (isRecognizerChecked) {
-        //     const reverseBetCheckBox = $('#reverseBet');
-        //     if (losses > wins) {
-        //         reverseBetCheckBox.prop('checked', true);
-        //     } else {
-        //         reverseBetCheckBox.prop('checked', false);
-        //     }
-        // }
+    // const isRecognizerChecked = document.getElementById('recognizer').checked
+    //
+    // if (isRecognizerChecked) {
+    //     const reverseBetCheckBox = $('#reverseBet');
+    //     if (losses > wins) {
+    //         reverseBetCheckBox.prop('checked', true);
+    //     } else {
+    //         reverseBetCheckBox.prop('checked', false);
+    //     }
+    // }
 
     // }
 
