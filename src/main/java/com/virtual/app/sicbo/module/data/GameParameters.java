@@ -51,6 +51,8 @@ public class GameParameters {
     @Column(name = "virtual_win")
     private Integer virtualWin;
 
+    @Column(name = "virtual_win_auto")
+    private Integer virtualWinAuto;
 
     @Column(name = "is_compounding")
     private Integer isCompounding;

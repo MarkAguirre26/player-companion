@@ -307,18 +307,24 @@
 
                 <!-- Shield Section aligned under Money Management -->
                 <label class="text-sm text-left">Shield</label>
-                <div class="grid grid-cols-2 gap-2 mt-2" style="margin-left: 0; margin-top: -5px;">
+                <div class="grid grid-cols-3 gap-2 mt-2" style="margin-left: 0; margin-top: -5px;">
                     <div class="flex flex-col">
-                        <label for="stopTrigger" class="text-xs">Trigger:</label>
-                        <input type="number" id="stopTrigger" class="p-1 border rounded text-sm w-full"
-                               placeholder="Trigger">
+                        <label for="stopTrigger" class="sm">Trigger:</label>
+                        <input type="number" id="stopTrigger" class="p-1 border rounded text-sm w-full" placeholder="Trigger">
                     </div>
+
                     <div class="flex flex-col">
-                        <label for="virtualWin" class="text-xs">Win:</label>
-                        <input type="number" id="virtualWin" class="p-1 border rounded text-sm w-full"
-                               placeholder="Win">
+                        <label for="virtualWin" class="sm">Win:</label>
+                        <input type="number" id="virtualWin" class="p-1 border rounded text-sm w-full" placeholder="Win">
+                    </div>
+
+                    <!-- Adjusted column -->
+                    <div class="flex flex-col col-span-1" style="max-width: 50px;">
+                        <label for="virtualWinAuto" class="sm">auto:</label>
+                        <input type="checkbox" id="virtualWinAuto" class="p-1 border rounded text-sm w-full">
                     </div>
                 </div>
+
 
 
                 <div class="col-start-2 col-span-1 mt-2 hidden">

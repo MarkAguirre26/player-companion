@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/api/sicBo")
@@ -446,13 +447,6 @@ public class SicBoController {
                 if (gameResultResponse.getHandResult() != null) {
 
 
-//                    String stopTriggerKey = "L".repeat(stopTrigger);
-//                    String stopTriggerKeyValue = TriggerFinder.getLastPart(gameResultResponse.getHandResult(), stopTriggerKey);
-//                    if (stopTriggerKey.equals(stopTriggerKeyValue)) {
-//                        saveFreezeState(ON);
-//                    }
-
-
                     if (gameResultResponse.getLossCounter() >= stopTrigger) {
                         saveFreezeState(ON);
                         gameResultResponse.setSuggestedBetUnit(0);
@@ -471,6 +465,9 @@ public class SicBoController {
                                 String stopTriggerKeyValue = TriggerFinder.getLastPart(gameResultResponse.getHandResult().replace("*", ""), stopTriggerKey);
                                 if (stopTriggerKey.equals(stopTriggerKeyValue)) {
                                     saveFreezeState(ON);
+
+                                    changeTheVirtualWin(gameParameters);
+
                                 } else {
 //                                    saveFreezeState(OFF);
                                 }
@@ -481,7 +478,7 @@ public class SicBoController {
                         } else {
 
                             saveFreezeState(ON);
-
+                            changeTheVirtualWin(gameParameters);
 
                         }
 
@@ -509,6 +506,7 @@ public class SicBoController {
                     saveFreezeState(OFF);
                 } else {
                     saveFreezeState(ON);
+                    changeTheVirtualWin(gameParameters);
                 }
 
             }
@@ -545,6 +543,7 @@ public class SicBoController {
 
                 gameResultResponse.setSuggestedBetUnit(0);
                 saveFreezeState(ON);//
+                changeTheVirtualWin(gameParameters);
                 String skipStateSequence = gameResultResponse.getSkipState();
                 String modifiedStr = skipStateSequence.substring(0, skipStateSequence.length() - 1);
                 gameResultResponse.setSkipState(modifiedStr + "Y");
@@ -562,7 +561,7 @@ public class SicBoController {
                 }
             }
 
-            if(gameResultResponse.getRecommendedBet().equals("-")){
+            if (gameResultResponse.getRecommendedBet().equals("-")) {
                 gameResultResponse.setSuggestedBetUnit(0);
             }
 
@@ -570,6 +569,21 @@ public class SicBoController {
 
             return provideGameResponse(gameResultResponse);
         }
+
+    }
+
+    private void changeTheVirtualWin(GameParameters gameParameters) {
+
+        if (gameParameters.getVirtualWin() != null) {
+
+            if (gameParameters.getVirtualWinAuto() == 1) {
+                Random random = new Random();
+                int randomNumber = random.nextInt(3) + 1; // Generates a number between 1 and 3
+                gameParameters.setVirtualWin(randomNumber);
+                gameParametersService.saveGameParameters(gameParameters);
+            }
+        }
+
 
     }
 

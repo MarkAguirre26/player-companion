@@ -437,6 +437,7 @@ function postGameParameters() {
             isCompounding: $('#isCompounding').is(':checked') ? 1 : 0, // Convert checkbox to integer
             stopTrigger: $('#stopTrigger').val(),
             virtualWin: $('#virtualWin').val(),
+            virtualWinAuto: $('#virtualWinAuto').is(':checked') ? 1 : 0, // Convert checkbox to integer
             startingFund: $('#startingFund').val(),
             dailyGoalPercentage: $('#dailyGoalPercentage').val(),
             betAmount: $('#betAmount').val()
@@ -503,6 +504,17 @@ async function fetchGameParameters() {
         } else {
             $('#recognizer').prop('checked', true);
         }
+
+        if(data.virtualWinAuto === 1){
+            $('#virtualWinAuto').prop('checked', true);
+            $('#virtualWin').prop('disabled', true);
+
+        }else{
+            $('#virtualWinAuto').prop('checked', false);
+            $('#virtualWin').prop('disabled', false);
+
+        }
+
 
         $('#isShield').prop('checked', data.isShield === 1);
         $('#isCompounding').prop('checked', data.isCompounding === 1);
@@ -582,6 +594,8 @@ async function playGame(userInput) {
 
         $('#status').text(`Error: ${xhr.responseText || 'Unexpected error'}`);
     }
+
+fetchGameParameters();
 }
 
 
