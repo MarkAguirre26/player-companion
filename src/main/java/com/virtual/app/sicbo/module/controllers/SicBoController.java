@@ -221,10 +221,11 @@ public class SicBoController {
         String userUuid = userPrincipal.getUserUuid();
 
 //        String strategy = currentStrategy().equals(Strategies.FLAT.getValue()) ? "FLAT" : currentStrategy();
-        String strategy = getGameParameters().getMoneyManagement();
+        String moneyManagement = getGameParameters().getMoneyManagement();
+        String Strategy = getGameParameters().getStrategy();
         String winLose = response.getGameStatus().getWins() + "/" + response.getGameStatus().getLosses();
         Journal savedJournal = journalService.saveJournal(new Journal(ZERO, userUuid, winLose, response.getGameStatus().getHandCount(),
-                response.getGameStatus().getProfit(), strategy.toLowerCase()));
+                response.getGameStatus().getProfit(), Strategy.toLowerCase() + " | " + moneyManagement.toLowerCase()));
 
         if (savedJournal != null) {
 
@@ -450,6 +451,7 @@ public class SicBoController {
                     if (gameResultResponse.getLossCounter() >= stopTrigger) {
                         saveFreezeState(ON);
                         gameResultResponse.setSuggestedBetUnit(0);
+
                     } else {
                         if (gameResultResponse.getSequence().replace("1111", "").length() > 1) {
 //                            saveFreezeState(OFF);
@@ -466,7 +468,6 @@ public class SicBoController {
                                 if (stopTriggerKey.equals(stopTriggerKeyValue)) {
                                     saveFreezeState(ON);
 
-                                    changeTheVirtualWin(gameParameters);
 
                                 } else {
 //                                    saveFreezeState(OFF);
@@ -478,7 +479,7 @@ public class SicBoController {
                         } else {
 
                             saveFreezeState(ON);
-                            changeTheVirtualWin(gameParameters);
+
 
                         }
 
@@ -506,7 +507,7 @@ public class SicBoController {
                     saveFreezeState(OFF);
                 } else {
                     saveFreezeState(ON);
-                    changeTheVirtualWin(gameParameters);
+
                 }
 
             }
@@ -543,7 +544,7 @@ public class SicBoController {
 
                 gameResultResponse.setSuggestedBetUnit(0);
                 saveFreezeState(ON);//
-                changeTheVirtualWin(gameParameters);
+
                 String skipStateSequence = gameResultResponse.getSkipState();
                 String modifiedStr = skipStateSequence.substring(0, skipStateSequence.length() - 1);
                 gameResultResponse.setSkipState(modifiedStr + "Y");
@@ -736,6 +737,7 @@ public class SicBoController {
                     if (gameParameters.getStopTrigger() > 0) {
 
                         currentLossCount++;
+                        changeTheVirtualWin(gameParameters);
                     }
 
                     playingUnit -= suggestedUnit;
