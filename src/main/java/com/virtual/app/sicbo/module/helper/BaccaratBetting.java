@@ -160,7 +160,7 @@ public class BaccaratBetting {
 
         //Repeated Geometric Progression (RGP)
         int initialBet = 1;
-        int[] progression = {1,2,4,3,6,9}; // 10th levels
+        int[] progression = {1,2,4,3,6,9}; // 6th levels
         int currentStage = 0;
         int currentBetUnit = initialBet;
 

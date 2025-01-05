@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
-public class MarkovChain {
+public class Strategies {
 
     private int CHUNK_SIZE = 0;
 

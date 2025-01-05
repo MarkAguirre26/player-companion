@@ -1,7 +1,6 @@
 package com.virtual.app.sicbo.module.controllers;
 
 import com.virtual.app.sicbo.module.common.concrete.RiskLevel;
-import com.virtual.app.sicbo.module.common.concrete.Strategies;
 import com.virtual.app.sicbo.module.common.concrete.UserConfig;
 import com.virtual.app.sicbo.module.data.*;
 import com.virtual.app.sicbo.module.data.response.GameResultResponse;
@@ -46,7 +45,7 @@ public class SicBoController {
     private static final Logger logger = LoggerFactory.getLogger(SicBoController.class);
 
     private final EdmelBaccarat edmelBaccarat;
-    private final MarkovChain markovChain;
+    private final Strategies strategies;
     private final JournalServiceImpl journalService;
     private final GameStatusService gameStatusService;
     private final GameResponseService gameResponseService;
@@ -64,13 +63,13 @@ public class SicBoController {
 
 
     @Autowired
-    public SicBoController(EdmelBaccarat edmelBaccarat, MarkovChain markovChain, JournalServiceImpl journalService,
+    public SicBoController(EdmelBaccarat edmelBaccarat, Strategies strategies, JournalServiceImpl journalService,
                            GameStatusService gameStatusService, GameResponseService gameResponseService,
                            TrailingStopService trailingStopService, GamesArchiveService gamesArchiveService,
                            UserConfigService configService, WebSocketMessageService messageService,
                            GameParametersService gameParametersService) {
         this.edmelBaccarat = edmelBaccarat;
-        this.markovChain = markovChain;
+        this.strategies = strategies;
 
         this.journalService = journalService;
         this.gameStatusService = gameStatusService;
@@ -154,12 +153,12 @@ public class SicBoController {
                 }
             } else if (getGameParameters().getStrategy().equals("RECOGNIZER")) {
                 System.out.println("BRAIN: RECOGNIZER");
-                String patternRecognizerPrediction = markovChain.patternRecognizer(sequence);
+                String patternRecognizerPrediction = strategies.patternRecognizer(sequence);
                 char p = patternRecognizerPrediction.charAt(0);
                 prediction = new Pair<>(p, 1.0);
             } else {
                 System.out.println("BRAIN: OPEN AI");
-                markovPrediction = markovChain.predictNext(sequence, chunkSize);
+                markovPrediction = strategies.predictNext(sequence, chunkSize);
                 if (markovPrediction.isPresent()) {
                     gameResultResponse.setMessage(PLACE_YOUR_BET);
                     prediction = new Pair<>(markovPrediction.get().first, markovPrediction.get().second);
@@ -357,12 +356,12 @@ public class SicBoController {
             int betSize = 0;
             if (gameResultResponse.getSkipState() != null) {
 
-                if (currentStrategy.equals(Strategies.FLAT.getValue())) {
+                if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.FLAT.getValue())) {
                     betSize = 1;
-                } else if (currentStrategy.equals(Strategies.RLIZA.getValue())) {
+                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.RLIZA.getValue())) {
 
                     betSize = BaccaratBetting.rLiza(gameResultResponse);
-                } else if (currentStrategy.equals(Strategies.hybrid.getValue())) {
+                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.hybrid.getValue())) {
 
                     betSize = BaccaratBetting.hybrid(gameResultResponse);
 
@@ -372,13 +371,13 @@ public class SicBoController {
                         betSize = 2;
                     }
 
-                } else if (currentStrategy.equals(Strategies.ALL_RED.getValue())) {
+                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.ALL_RED.getValue())) {
                     betSize = BaccaratBetting.allRed(gameResultResponse);
-                } else if (currentStrategy.equals(Strategies.RGP.getValue())) {
+                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.RGP.getValue())) {
                     betSize = BaccaratBetting.rgp(gameResultResponse);
-                } else if (currentStrategy.equals(Strategies.HIGH.getValue())) {
+                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.HIGH.getValue())) {
                     betSize = BaccaratBetting.high(gameResultResponse);
-                } else if (currentStrategy.equals(Strategies.KISS_MODIFIED.getValue())) {
+                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.KISS_MODIFIED.getValue())) {
 
                     betSize = BaccaratBetting.kissModifiedBetting(gameResultResponse);
                     int currentProfit = gameResultResponse.getGameStatus().getProfit();
@@ -392,7 +391,7 @@ public class SicBoController {
                     }
 
 
-                } else if (currentStrategy.equals(Strategies.REVERSE_LABOUCHERE.getValue())) {
+                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.REVERSE_LABOUCHERE.getValue())) {
                     betSize = BaccaratBetting.reverseLabouchere(gameResultResponse, gameParameters.getStopLoss());
                 }
 
@@ -431,7 +430,7 @@ public class SicBoController {
                 }
             } else {
 
-
+            // wala
             }
 
 
