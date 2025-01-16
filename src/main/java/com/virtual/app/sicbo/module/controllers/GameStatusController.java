@@ -42,15 +42,6 @@ public class GameStatusController {
         return ResponseEntity.ok(newGameStatus);
     }
 
-    // Update an existing game status
-//    @PutMapping("/{id}")
-//    public ResponseEntity<GameStatus> updateGameStatus(@PathVariable("id") Integer id, @RequestBody GameStatus updatedGameStatus) {
-//        GameStatus gameStatus = gameStatusService.updateGameStatus(id, updatedGameStatus);
-//        if (gameStatus == null) {
-//            return ResponseEntity.notFound().build();
-//        }
-//        return ResponseEntity.ok(gameStatus);
-//    }
 
     // Delete a game status by ID
     @DeleteMapping("/{id}")

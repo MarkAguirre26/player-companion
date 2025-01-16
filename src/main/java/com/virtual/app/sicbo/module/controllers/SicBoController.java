@@ -351,55 +351,8 @@ public class SicBoController {
             return provideGameResponse(gameResultResponse);
         } else {
 
-            String currentStrategy = getGameParameters().getMoneyManagement();
-            //            ---------------------MONEY MANAGEMENT-------------------------------------
-            int betSize = 0;
-            if (gameResultResponse.getSkipState() != null) {
 
-                if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.FLAT.getValue())) {
-                    betSize = 1;
-                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.RLIZA.getValue())) {
-
-                    betSize = BaccaratBetting.rLiza(gameResultResponse);
-                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.hybrid.getValue())) {
-
-                    betSize = BaccaratBetting.hybrid(gameResultResponse);
-
-                    int currentProfit = gameResultResponse.getGameStatus().getProfit();
-
-                    if (currentProfit == -1 || currentProfit == -3) {
-                        betSize = 2;
-                    }
-
-                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.ALL_RED.getValue())) {
-                    betSize = BaccaratBetting.allRed(gameResultResponse);
-                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.RGP.getValue())) {
-                    betSize = BaccaratBetting.rgp(gameResultResponse);
-                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.HIGH.getValue())) {
-                    betSize = BaccaratBetting.high(gameResultResponse);
-                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.KISS_MODIFIED.getValue())) {
-
-                    betSize = BaccaratBetting.kissModifiedBetting(gameResultResponse);
-                    int currentProfit = gameResultResponse.getGameStatus().getProfit();
-
-
-                    if (((currentProfit == 3 || currentProfit == 0) && betSize == 4)
-                            || currentProfit == 0 && betSize == 2) {
-                        betSize = 1;
-                    } else if (currentProfit == -1 && betSize == 4 || currentProfit == 1 && betSize == 4) {
-                        betSize = 2;
-                    }
-
-
-                } else if (currentStrategy.equals(com.virtual.app.sicbo.module.common.concrete.Strategies.REVERSE_LABOUCHERE.getValue())) {
-                    betSize = BaccaratBetting.reverseLabouchere(gameResultResponse, gameParameters.getStopLoss());
-                }
-
-            }
-
-
-//
-            //            ----------------------------------------------------------
+            int betSize = reEvaluateBetSize(gameResultResponse, gameParameters);
 
             gameResultResponse.setRecommendedBet(nextPredictedBet);
 
@@ -430,15 +383,13 @@ public class SicBoController {
                 }
             } else {
 
-            // wala
+                // wala
             }
 
 
 //          SET FREEZE STATE----------------------------------------------------
 
             int stopTrigger = gameParameters.getStopTrigger();
-
-
             int virtualWin = gameParameters.getVirtualWin();
 
             if (stopTrigger > 0 && virtualWin > 0) {
@@ -453,33 +404,24 @@ public class SicBoController {
 
                     } else {
                         if (gameResultResponse.getSequence().replace("1111", "").length() > 1) {
-//                            saveFreezeState(OFF);
-
                             String virtualWinKey = "W".repeat(virtualWin);
-
                             boolean isGoodToBet = TriggerFinder.isGoodToBet(gameResultResponse.getHandResult().replace("*", ""), virtualWinKey);
                             if (isGoodToBet && gameResultResponse.getSequence().length() > 1) {
                                 saveFreezeState(OFF);
                             } else {
-//                                saveFreezeState(ON);// to do
                                 String stopTriggerKey = "L".repeat(stopTrigger);
                                 String stopTriggerKeyValue = TriggerFinder.getLastPart(gameResultResponse.getHandResult().replace("*", ""), stopTriggerKey);
                                 if (stopTriggerKey.equals(stopTriggerKeyValue)) {
                                     saveFreezeState(ON);
 
 
-                                } else {
-//                                    saveFreezeState(OFF);
                                 }
 
                             }
 
 
                         } else {
-
                             saveFreezeState(ON);
-
-
                         }
 
                     }
@@ -487,11 +429,8 @@ public class SicBoController {
 
                     if (gameResultResponse.getVirtualWin() >= gameParameters.getVirtualWin()) {
 
-
                         gameResultResponse.setHandResult(gameResultResponse.getHandResult() + "W");
-
                         gameResultResponse.setMessage(PLACE_YOUR_BET);
-
                         gameResultResponse.setLossCounter(0);
                         gameResultResponse.setSuggestedBetUnit(betSize);
 
@@ -499,16 +438,13 @@ public class SicBoController {
 
                 }
 
-
             } else {
 
                 if (gameResultResponse.getSequence().replace("1111", "").length() > 1) {
                     saveFreezeState(OFF);
                 } else {
                     saveFreezeState(ON);
-
                 }
-
             }
 
 
@@ -549,8 +485,6 @@ public class SicBoController {
                 gameResultResponse.setSkipState(modifiedStr + "Y");
             }
 
-
-//            System.out.println("SequenceHere:"+gameResultResponse.getSequence());
             if (getGameParameters().getStrategy().equals("PATTERN")) {
                 if (gameResultResponse.getSequence().length() < 4 || !gameResultResponse.getMessage().equals(PLACE_YOUR_BET)) {
 
@@ -679,6 +613,52 @@ public class SicBoController {
         }
     }
 
+
+    private int reEvaluateBetSize(GameResultResponse gameResultResponse,
+                                  GameParameters gameParameters) {
+        String currentStrategy = getGameParameters().getMoneyManagement();
+        int betSize = 0;
+        int currentProfit = gameResultResponse.getGameStatus().getProfit();
+        if (gameResultResponse.getSkipState() != null) {
+            switch (currentStrategy) {
+                case "FLAT":
+                    betSize = 1;
+                    break;
+                case "RLIZA":
+                    betSize = BaccaratBetting.rLiza(gameResultResponse);
+                    break;
+                case "hybrid":
+                    betSize = BaccaratBetting.hybrid(gameResultResponse);
+                    if (currentProfit == -1 || currentProfit == -3) {
+                        betSize = 2;
+                    }
+                    break;
+                case "ALL_RED":
+                    betSize = BaccaratBetting.allRed(gameResultResponse);
+                    break;
+                case "RGP":
+                    betSize = BaccaratBetting.rgp(gameResultResponse);
+                    break;
+                case "HIGH":
+                    betSize = BaccaratBetting.high(gameResultResponse);
+                    break;
+                case "KISS_MODIFIED":
+                    betSize = BaccaratBetting.kissModifiedBetting(gameResultResponse);
+                    if (((currentProfit == 3 || currentProfit == 0) && betSize == 4)
+                            || currentProfit == 0 && betSize == 2) {
+                        betSize = 1;
+                    } else if (currentProfit == -1 && betSize == 4 || currentProfit == 1 && betSize == 4) {
+                        betSize = 2;
+                    }
+                    break;
+                case "REVERSE_LABOUCHERE":
+                    betSize = BaccaratBetting.reverseLabouchere(gameResultResponse, gameParameters.getStopLoss());
+                    break;
+            }
+        }
+        return betSize;
+    }
+
     private boolean isFrozen() {
         String userUuid = ((UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUserUuid();
         return configService.findByUserUuidAndName(userUuid, UserConfig.FREEZE.getValue())
@@ -704,31 +684,21 @@ public class SicBoController {
 
         String sequence = gameResultResponse.getSequence();
 
-
         if (previousPrediction.equals(diceSizeValue) &&
                 sequence.replace("1111", "").length() > 1) {
-
-
             profit = (isFrozen() ? profit : profit + suggestedUnit);
             playingUnit += suggestedUnit;
 
             totalWins++;
-
-
             currentLossCount = 0;
             gameResultResponse.setHandResult(gameResultResponse.getHandResult() + "W");
-
-
             gameResultResponse.setMessage(PLACE_YOUR_BET);
 
 
         } else {
             if (!gameResultResponse.getSequence().contains("1111")) {
 
-
                 profit = (isFrozen() ? profit : profit - suggestedUnit);
-
-
                 if (previousPrediction.equals("-")) {
                     gameResultResponse.setHandResult(gameResultResponse.getHandResult() + "*");
                 } else {
@@ -767,18 +737,12 @@ public class SicBoController {
     @PostMapping("/freeze-state")
     public ResponseEntity<String> freezeState(@RequestParam String onOff) {
         try {
-
-
             saveFreezeState(onOff);
-
-
             // Return success with the updated value
             return ResponseEntity.ok(onOff);
 
         } catch (Exception e) {
-            e.printStackTrace(); // Replace with proper logging
-
-            // Return Internal Server Error in case of failure
+            logger.error("Error occurred while trying to freeze state", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
         }
     }
@@ -825,54 +789,6 @@ public class SicBoController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
         }
     }
-
-//    @GetMapping("/strategy")
-//    public ResponseEntity<String> getStrategy() {
-//
-//        UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        String userUuid = userPrincipal.getUserUuid();
-//        Config strategyConfig = configService.getConfigsByUserUuid(userUuid)
-//                .stream()
-//                .filter(config -> config.getName().equals(Strategies.STRATEGY.getValue()))
-//                .findFirst()
-//                .orElse(null);
-//
-//        if (strategyConfig != null) {
-//            return ResponseEntity.ok(strategyConfig.getValue());
-//        }
-//        return ResponseEntity.ok(Strategies.FLAT.getValue());
-//    }
-
-//    @PostMapping("/strategy")
-//    public ResponseEntity<String> setStrategy(@RequestParam String strategy) {
-//        try {
-//            // Get the current authenticated user
-//            UserPrincipal userPrincipal = (UserPrincipal) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//            String userUuid = userPrincipal.getUserUuid();
-//
-//            // Find the freeze configuration or create a new one if it doesn't exist
-//            Config strategyConfig = configService.findByUserUuidAndName(userUuid, Strategies.STRATEGY.getValue())
-//                    .orElseGet(() -> new Config(userUuid, Strategies.STRATEGY.getValue(), Strategies.FLAT.getValue()));
-//
-//            // Update the value of the freeze configuration
-//            strategyConfig.setValue(strategy);
-//
-//
-//            // Save or update the configuration
-//            configService.saveOrUpdateConfig(strategyConfig);
-//
-//            // Return success with the updated value
-//            return ResponseEntity.ok("ok");
-//
-//        } catch (Exception e) {
-//            e.printStackTrace(); // Replace with proper logging
-//
-//            // Return Internal Server Error in case of failure
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Operation failed");
-//        }
-//
-//    }
-
 
     @GetMapping("/current-state")
     public GameResultResponse getCurrentState(@RequestParam String message) {
@@ -996,13 +912,6 @@ public class SicBoController {
 
         return gameResultResponse;
     }
-
-
-//    private Pair<Character, Double> combinePredictions(Optional<Pair<Character, Double>> markovResult) {
-//
-//        // Handle both results being absent
-//        return markovResult.orElseGet(() -> new Pair<>(null, 0.0));
-//    }
 
 
     private GameResultResponse getGameResponse(UserPrincipal userPrincipal) {

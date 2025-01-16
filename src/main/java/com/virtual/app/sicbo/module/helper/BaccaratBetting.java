@@ -58,7 +58,6 @@ public class BaccaratBetting {
     }
 
 
-
     //    1,3,5
     public static int allRed(GameResultResponse gameResultResponse) {
 
@@ -146,8 +145,7 @@ public class BaccaratBetting {
     }
 
 
-
-//1,2,4,3,6,9
+    //1,2,4,3,6,9
     public static int hybrid(GameResultResponse gameResultResponse) {
 
         String handResult = gameResultResponse.getHandResult().replace("null", "");
@@ -160,7 +158,7 @@ public class BaccaratBetting {
 
         //Repeated Geometric Progression (RGP)
         int initialBet = 1;
-        int[] progression = {1,2,4,3,6,9}; // 6th levels
+        int[] progression = {1, 2, 4, 3, 6, 9}; // 6th levels
         int currentStage = 0;
         int currentBetUnit = initialBet;
 
@@ -354,10 +352,6 @@ public class BaccaratBetting {
                 return 0;
             }
 
-//            // Return the next bet amount after processing the current bet
-//            if (!betAmountSequence.isEmpty()) {
-//                return betAmountSequence.size() > 1 ? betAmountSequence.get(0) + betAmountSequence.get(betAmountSequence.size() - 1) : betAmountSequence.get(0) * 2;
-//            }
         }
 
         // Final results after processing the full betAmountSequence

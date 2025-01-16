@@ -33,11 +33,6 @@ public class GameResponseController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-//    @PostMapping
-//    public ResponseEntity<GameResponse> createGameResponse(@RequestBody GameResponse gameResponse) {
-//        GameResponse createdResponse = gameResponseService.createGameResponse(gameResponse);
-//        return ResponseEntity.ok(createdResponse);
-//    }
 
     @PutMapping("/{id}")
     public ResponseEntity<GameResponse> updateGameResponse(@PathVariable Integer id, @RequestBody GameResponse newResponse) {

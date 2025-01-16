@@ -30,11 +30,6 @@ public class GameParametersController {
         this.gameParametersService = gameParametersService;
     }
 
-    private static int calculateBetAmount(int currentFund, int startingBetUnit) {
-        // Calculate the bet amount based on current fund and starting bet unit
-        return currentFund / startingBetUnit;
-    }
-
     // Function to calculate the current fund
     public int calculateCurrentFund(double startingFund, int profit, double unitValue) {
         // Calculate the current fund and cast it to int
@@ -46,7 +41,6 @@ public class GameParametersController {
         // Calculate the unit value directly rounded to the nearest 10
         return (int) (Math.round((startingFund / 100) / 10.0) * 10);
     }
-
 
 
     @GetMapping("/platform")
@@ -122,10 +116,6 @@ public class GameParametersController {
         int currentFund = 0;
         int betAmount = 0;
 
-    // Get the compounding flag; default to 0 if null
-//        int isCompounding = gameParameters.get() != null && gameParameters.get().getIsCompounding() != null
-//                ? gameParameters.get().getIsCompounding()
-//                : 0;
 
     // Calculate current fund and bet amount based on compounding status
 
